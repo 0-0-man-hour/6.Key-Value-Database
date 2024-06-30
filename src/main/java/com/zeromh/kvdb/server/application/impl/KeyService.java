@@ -7,10 +7,11 @@ import com.zeromh.kvdb.server.application.KeyUseCase;
 import com.zeromh.kvdb.server.infrastructure.network.NetworkPort;
 import com.zeromh.kvdb.server.config.QuorumProperty;
 import com.zeromh.kvdb.server.domain.DataObject;
-import com.zeromh.kvdb.server.infrastructure.store.StorePort;
+import com.zeromh.kvdb.server.infrastructure.store.impl.MongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class KeyService implements KeyUseCase {
     private final QuorumProperty quorumProperty;
 
     private final NetworkPort networkPort;
-    private final StorePort storePort;
+    private final MongoRepository mongoRepository;
 
 
     @Override
@@ -33,7 +34,15 @@ public class KeyService implements KeyUseCase {
         HashServer server = hashServicePort.getServer(key);
         if (server.equals(myHashServer)) {
             log.info("myserver({}) is target of getting data(key={}).", server.getName(), key.getKey());
-            return storePort.getValue(key, false);
+            return mongoRepository.getValue(key, false)
+                    .flatMap(data ->  Flux.fromIterable(hashServicePort.getReplicaServers(key, quorumProperty.getNumberOfReplica()))
+                            .flatMap(replicaServer -> networkPort.fetchKeyValue(replicaServer, key, true)
+                                    .zipWith(Mono.just(replicaServer)))
+                            .take(quorumProperty.getRead())
+                            .filter(data::equals)
+                            .doOnNext(tuple2 -> log.info("Ack of getting data came from {} ", tuple2.getT2().getName()))
+                            .then(Mono.just(data))
+                    );
 
         }
         return networkPort.fetchKeyValue(server, key, false);
@@ -42,7 +51,7 @@ public class KeyService implements KeyUseCase {
 
     @Override
     public Mono<DataObject> getReplicaData(HashKey key) {
-        return storePort.getValue(key, true);
+        return mongoRepository.getValue(key, true);
     }
 
     @Override
@@ -51,7 +60,14 @@ public class KeyService implements KeyUseCase {
         HashServer server = hashServicePort.getServer(key);
         if (server.equals(myHashServer)) {
             log.info("myserver({}) is target of putting data(key={}).", server.getName(), dataObject.getKey());
-            return storePort.saveValue(key, dataObject, false).thenReturn(true);
+            return mongoRepository.saveValue(key, dataObject, false)
+                    .flatMap(data ->  Flux.fromIterable(hashServicePort.getReplicaServers(key, quorumProperty.getNumberOfReplica()))
+                            .flatMap(replicaServer -> networkPort.saveValue(replicaServer, dataObject, true)
+                                    .zipWith(Mono.just(replicaServer)))
+                            .take(quorumProperty.getWrite())
+                            .doOnNext(tuple2 -> log.info("Ack of putting data came from {} ", tuple2.getT2().getName()))
+                            .then(Mono.just(true))
+                    );
         }
 
         return networkPort.saveValue(server, dataObject, false);
@@ -64,7 +80,7 @@ public class KeyService implements KeyUseCase {
         if(!replicaServers.contains(myHashServer)) {
             return Mono.just(false);
         }
-        return storePort.saveValue(key, dataObject, true)
+        return mongoRepository.saveValue(key, dataObject, true)
                 .then(Mono.just(true));
     }
 }

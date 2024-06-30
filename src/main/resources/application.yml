@@ -1,0 +1,26 @@
+server:
+  name: ${SERVER_NAME:myserver1}
+  url: ${SERVER_URL:myserver1}
+  port: ${SERVER_PORT:8083}
+  nums-of-node: 4
+  server-list:
+    - myserver1:myserver1:8083:8083:4
+    - myserver2:myserver2:8084:8083:4
+    - myserver3:myserver3:8085:8083:5
+    - myserver4:myserver4:8086:8083:4
+    - myserver5:myserver5:8087:8083:4
+    - myserver6:myserver6:8088:8083:4
+
+quorum:
+  number-of-replica: 3
+  write: 2
+  read: 2
+
+hash:
+  function: md5 #custom
+  consistent: true
+  node-nums: 4
+spring:
+  data:
+    mongodb:
+      database: ${SERVER_NAME:myserver1}
