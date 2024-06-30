@@ -5,7 +5,8 @@ import com.zeromh.kvdb.server.domain.DataObject;
 import reactor.core.publisher.Mono;
 
 public interface StorePort {
-    Mono<DataObject> getValue(HashKey key);
-    Mono<Boolean> saveValue(HashKey hashKey, DataObject dataObject);
 
+    Mono<DataObject> getValue(HashKey key, boolean isReplica);
+
+    Mono<DataObject> saveValue(HashKey key, DataObject dataObject, boolean isReplica);
 }
