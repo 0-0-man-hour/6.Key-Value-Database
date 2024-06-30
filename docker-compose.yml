@@ -1,0 +1,115 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+
+  myserver1:
+    image: myapp:latest
+    container_name: myserver1
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=myserver1
+      - SPRING_DATA_MONGODB_DATABASE=myserver1
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver1
+      - SERVER_NAME=myserver1
+      - SERVER_URL=myserver1
+      - SERVER_PORT=8083
+    depends_on:
+      - mongodb
+
+
+  myserver2:
+    image: myapp:latest
+    container_name: myserver2
+    ports:
+      - "8084:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=myserver2
+      - SPRING_DATA_MONGODB_DATABASE=myserver2
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver2
+      - SERVER_NAME=myserver2
+      - SERVER_URL=myserver2
+      - SERVER_PORT=8084
+    depends_on:
+      - mongodb
+
+
+  myserver3:
+    image: myapp:latest
+    container_name: myserver3
+    ports:
+      - "8085:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=myserver3
+      - SPRING_DATA_MONGODB_DATABASE=myserver3
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver3
+      - SERVER_NAME=myserver3
+      - SERVER_URL=myserver3
+      - SERVER_PORT=8085
+    depends_on:
+      - mongodb
+
+
+  myserver4:
+    image: myapp:latest
+    container_name: myserver4
+    ports:
+      - "8086:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=myserver4
+      - SPRING_DATA_MONGODB_DATABASE=myserver4
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver4
+      - SERVER_NAME=myserver4
+      - SERVER_URL=myserver4
+      - SERVER_PORT=8086
+    depends_on:
+      - mongodb
+
+  myserver5:
+    image: myapp:latest
+    container_name: myserver5
+    ports:
+      - "8087:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=myserver5
+      - SPRING_DATA_MONGODB_DATABASE=myserver5
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver5
+      - SERVER_NAME=myserver5
+      - SERVER_URL=myserver5
+      - SERVER_PORT=8087
+    depends_on:
+      - mongodb
+
+  myserver6:
+    image: myapp:latest
+    container_name: myserver6
+    ports:
+      - "8088:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=myserver6
+      - SPRING_DATA_MONGODB_DATABASE=myserver6
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver6
+      - SERVER_NAME=myserver6
+      - SERVER_URL=myserver6
+      - SERVER_PORT=8088
+    depends_on:
+      - mongodb
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - myserver1
+      - myserver2
+      - myserver3
+      - myserver4
+      - myserver5
+      - myserver6
