@@ -1,4 +1,4 @@
-package com.zeromh.kvdb.server.application;
+package com.zeromh.kvdb.server.node.application;
 
 import com.zeromh.consistenthash.application.dto.ServerStatus;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
@@ -11,4 +11,5 @@ public interface ServerUseCase {
     ServerStatus deleteServer(HashServer hashServer);
 
     HashServer getServer(HashKey key);
+
 }

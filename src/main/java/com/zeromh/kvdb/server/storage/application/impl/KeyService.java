@@ -1,13 +1,13 @@
-package com.zeromh.kvdb.server.application.impl;
+package com.zeromh.kvdb.server.storage.application.impl;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
-import com.zeromh.kvdb.server.application.KeyUseCase;
-import com.zeromh.kvdb.server.infrastructure.network.NetworkPort;
+import com.zeromh.kvdb.server.storage.application.KeyUseCase;
+import com.zeromh.kvdb.server.storage.infrastructure.network.NetworkPort;
 import com.zeromh.kvdb.server.config.QuorumProperty;
-import com.zeromh.kvdb.server.domain.DataObject;
-import com.zeromh.kvdb.server.infrastructure.store.impl.MongoRepository;
+import com.zeromh.kvdb.server.common.domain.DataObject;
+import com.zeromh.kvdb.server.storage.infrastructure.store.impl.MongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

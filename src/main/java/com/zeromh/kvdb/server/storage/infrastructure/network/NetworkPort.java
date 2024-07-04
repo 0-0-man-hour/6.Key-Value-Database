@@ -1,8 +1,8 @@
-package com.zeromh.kvdb.server.infrastructure.network;
+package com.zeromh.kvdb.server.storage.infrastructure.network;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
-import com.zeromh.kvdb.server.domain.DataObject;
+import com.zeromh.kvdb.server.common.domain.DataObject;
 import reactor.core.publisher.Mono;
 
 public interface NetworkPort {

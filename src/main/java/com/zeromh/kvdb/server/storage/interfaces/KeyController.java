@@ -1,8 +1,8 @@
-package com.zeromh.kvdb.server.interfaces;
+package com.zeromh.kvdb.server.storage.interfaces;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
-import com.zeromh.kvdb.server.application.KeyUseCase;
-import com.zeromh.kvdb.server.domain.DataObject;
+import com.zeromh.kvdb.server.storage.application.KeyUseCase;
+import com.zeromh.kvdb.server.common.domain.DataObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

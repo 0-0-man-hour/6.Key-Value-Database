@@ -21,6 +21,8 @@ hash:
   consistent: true
   node-nums: 4
 spring:
+  devtools:
+    add-properties: false
   data:
     mongodb:
       database: ${SERVER_NAME:myserver1}

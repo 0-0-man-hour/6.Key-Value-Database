@@ -1,12 +1,12 @@
-package com.zeromh.kvdb.server.infrastructure.network.impl;
+package com.zeromh.kvdb.server.storage.infrastructure.network.impl;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
-import com.zeromh.kvdb.server.infrastructure.network.NetworkPort;
-import com.zeromh.kvdb.server.domain.DataObject;
+import com.zeromh.kvdb.server.common.domain.DataObject;
+import com.zeromh.kvdb.server.storage.infrastructure.network.NetworkPort;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -14,20 +14,16 @@ import reactor.core.publisher.Mono;
 public class RestNetwork implements NetworkPort {
 
     private final static String REQUEST_KEY = "/key";
-    private final static String REQUEST_SERVER = "/server";
     private final static String REPLICA = "/replica";
 
 
     @Override
     public Mono<DataObject> fetchKeyValue(HashServer server, HashKey key, boolean isReplica) {
         if(!isReplica) {
-            log.info("Redirect to {}", makeServerUrl(server));
-        }        var webclient = WebClient.builder().baseUrl(makeServerUrl(server)).build();
-        return webclient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(isReplica?REQUEST_KEY + REPLICA : REQUEST_KEY)
-                        .path("/"+key.getKey()).build())
-                .retrieve()
+            log.info("Redirect to {}", server.getName());
+        }
+        String path = REQUEST_KEY + (isReplica? REPLICA:"") + "/" + key.getKey();
+        return webclientGenerator.get(server, path)
                 .bodyToMono(DataObject.class);
     }
 

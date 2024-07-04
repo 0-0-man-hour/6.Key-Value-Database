@@ -1,11 +1,12 @@
-package com.zeromh.kvdb.server.application.impl;
+package com.zeromh.kvdb.server.node.application.impl;
 
 import com.zeromh.consistenthash.application.dto.ServerStatus;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
-import com.zeromh.kvdb.server.application.ServerUseCase;
-import com.zeromh.kvdb.server.infrastructure.network.NetworkPort;
+import com.zeromh.kvdb.server.node.application.ServerUseCase;
+import com.zeromh.kvdb.server.common.ServerManager;
+import com.zeromh.kvdb.server.storage.infrastructure.network.NetworkPort;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,18 +19,16 @@ import reactor.core.publisher.Mono;
 public class ServerService implements ServerUseCase {
 
 
-    private final HashServer myHashServer;
-    private final ServerStatus serverStatus;
-
+    private final ServerManager serverManager;
     private final HashServicePort hashServicePort;
     private final NetworkPort networkPort;
 
     @PostConstruct
     public void init() {
         //초기 서버 설정
-        Mono.just(serverStatus)
+        Mono.just(serverManager.getServerStatus())
             .doOnNext(hashServicePort::setServer)
-                .doOnNext(status -> log.info("{} servers registered.", serverStatus.getServerList()))
+                .doOnNext(status -> log.info("{} servers registered.", status.getServerList()))
                 .subscribe();
     }
 
@@ -47,4 +46,5 @@ public class ServerService implements ServerUseCase {
     public HashServer getServer(HashKey key) {
         return null;
     }
+
 }

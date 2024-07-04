@@ -1,4 +1,4 @@
-package com.zeromh.kvdb.server.domain;
+package com.zeromh.kvdb.server.common.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

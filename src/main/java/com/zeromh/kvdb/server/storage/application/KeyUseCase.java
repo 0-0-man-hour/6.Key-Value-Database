@@ -1,7 +1,7 @@
-package com.zeromh.kvdb.server.application;
+package com.zeromh.kvdb.server.storage.application;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
-import com.zeromh.kvdb.server.domain.DataObject;
+import com.zeromh.kvdb.server.common.domain.DataObject;
 import reactor.core.publisher.Mono;
 
 public interface KeyUseCase {
