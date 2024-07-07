@@ -16,6 +16,11 @@ quorum:
   write: 2
   read: 2
 
+gossip:
+  threshold:
+    temporary: 30
+    permanent: 60
+
 hash:
   function: md5 #custom
   consistent: true
