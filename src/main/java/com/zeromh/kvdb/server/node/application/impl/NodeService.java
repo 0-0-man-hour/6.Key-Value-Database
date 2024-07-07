@@ -7,7 +7,6 @@ import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
 import com.zeromh.kvdb.server.common.domain.ServerMembership;
 import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import com.zeromh.kvdb.server.common.ServerManager;
-import com.zeromh.kvdb.server.storage.infrastructure.network.NetworkPort;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ public class NodeService implements NodeUseCase {
 
     private final ServerManager serverManager;
     private final HashServicePort hashServicePort;
-    private final NetworkPort networkPort;
 
     @PostConstruct
     public void init() {

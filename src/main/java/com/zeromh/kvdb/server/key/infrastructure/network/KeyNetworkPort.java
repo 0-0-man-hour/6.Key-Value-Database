@@ -1,11 +1,11 @@
-package com.zeromh.kvdb.server.storage.infrastructure.network;
+package com.zeromh.kvdb.server.key.infrastructure.network;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import reactor.core.publisher.Mono;
 
-public interface NetworkPort {
+public interface KeyNetworkPort {
 //    Mono<ServerStatus> fetchServerStatus(HashServer server);
 
     Mono<DataObject> fetchKeyValue(HashServer server, HashKey key, boolean isReplica);

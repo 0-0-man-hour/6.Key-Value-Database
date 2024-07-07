@@ -1,4 +1,4 @@
-package com.zeromh.kvdb.server.storage.application;
+package com.zeromh.kvdb.server.key.application;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.kvdb.server.common.domain.DataObject;

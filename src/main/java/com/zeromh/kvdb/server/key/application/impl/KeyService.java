@@ -1,13 +1,13 @@
-package com.zeromh.kvdb.server.storage.application.impl;
+package com.zeromh.kvdb.server.key.application.impl;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
-import com.zeromh.kvdb.server.storage.application.KeyUseCase;
-import com.zeromh.kvdb.server.storage.infrastructure.network.NetworkPort;
+import com.zeromh.kvdb.server.key.application.KeyUseCase;
+import com.zeromh.kvdb.server.key.infrastructure.network.KeyNetworkPort;
 import com.zeromh.kvdb.server.config.QuorumProperty;
 import com.zeromh.kvdb.server.common.domain.DataObject;
-import com.zeromh.kvdb.server.storage.infrastructure.store.impl.MongoRepository;
+import com.zeromh.kvdb.server.key.infrastructure.store.impl.MongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class KeyService implements KeyUseCase {
     private final HashServicePort hashServicePort;
     private final QuorumProperty quorumProperty;
 
-    private final NetworkPort networkPort;
+    private final KeyNetworkPort keyNetworkPort;
     private final MongoRepository mongoRepository;
 
 
@@ -33,19 +33,19 @@ public class KeyService implements KeyUseCase {
     public Mono<DataObject> getData(HashKey key) {
         HashServer server = hashServicePort.getServer(key);
         if (server.equals(myHashServer)) {
-            log.info("myserver({}) is target of getting data(key={}).", server.getName(), key.getKey());
+            log.info("[Key] myserver({}) is target of getting data(key={}).", server.getName(), key.getKey());
             return mongoRepository.getValue(key, false)
                     .flatMap(data ->  Flux.fromIterable(hashServicePort.getReplicaServers(key, quorumProperty.getNumberOfReplica()))
-                            .flatMap(replicaServer -> networkPort.fetchKeyValue(replicaServer, key, true)
+                            .flatMap(replicaServer -> keyNetworkPort.fetchKeyValue(replicaServer, key, true)
                                     .zipWith(Mono.just(replicaServer)))
                             .take(quorumProperty.getRead())
                             .filter(data::equals)
-                            .doOnNext(tuple2 -> log.info("Ack of getting data came from {} ", tuple2.getT2().getName()))
+                            .doOnNext(tuple2 -> log.info("[Key] Ack of getting data came from {} ", tuple2.getT2().getName()))
                             .then(Mono.just(data))
                     );
 
         }
-        return networkPort.fetchKeyValue(server, key, false);
+        return keyNetworkPort.fetchKeyValue(server, key, false);
 
     }
 
@@ -59,18 +59,18 @@ public class KeyService implements KeyUseCase {
         HashKey key = HashKey.builder().key(dataObject.getKey()).build();
         HashServer server = hashServicePort.getServer(key);
         if (server.equals(myHashServer)) {
-            log.info("myserver({}) is target of putting data(key={}).", server.getName(), dataObject.getKey());
+            log.info("[Key] myserver({}) is target of putting data(key={}).", server.getName(), dataObject.getKey());
             return mongoRepository.saveValue(key, dataObject, false)
                     .flatMap(data ->  Flux.fromIterable(hashServicePort.getReplicaServers(key, quorumProperty.getNumberOfReplica()))
-                            .flatMap(replicaServer -> networkPort.saveValue(replicaServer, dataObject, true)
+                            .flatMap(replicaServer -> keyNetworkPort.saveValue(replicaServer, dataObject, true)
                                     .zipWith(Mono.just(replicaServer)))
                             .take(quorumProperty.getWrite())
-                            .doOnNext(tuple2 -> log.info("Ack of putting data came from {} ", tuple2.getT2().getName()))
+                            .doOnNext(tuple2 -> log.info("[Key] Ack of putting data came from {} ", tuple2.getT2().getName()))
                             .then(Mono.just(true))
                     );
         }
 
-        return networkPort.saveValue(server, dataObject, false);
+        return keyNetworkPort.saveValue(server, dataObject, false);
     }
 
     @Override
