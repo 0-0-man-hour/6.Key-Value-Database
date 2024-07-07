@@ -4,7 +4,7 @@ import com.zeromh.consistenthash.application.dto.ServerStatus;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
-import com.zeromh.kvdb.server.common.domain.ServerMembership;
+import com.zeromh.kvdb.server.common.domain.Membership;
 import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import com.zeromh.kvdb.server.common.ServerManager;
 import jakarta.annotation.PostConstruct;
@@ -42,8 +42,8 @@ public class NodeService implements NodeUseCase {
     }
 
     @Override
-    public Mono<?> deleteServer(ServerMembership serverMembership) {
-        HashServer deleteServer = serverManager.getServerByName(serverMembership.getServerName());
+    public Mono<?> deleteServer(Membership membership) {
+        HashServer deleteServer = serverManager.getServerByName(membership.getServerName());
         hashServicePort.deleteServerInfo(deleteServer);
         return Mono.just(true);
     }

@@ -13,7 +13,7 @@ import java.util.Objects;
 @Getter
 @ToString
 @Slf4j
-public class ServerMembership {
+public class Membership {
     private String serverName;
     private long heartbeat;
     @Setter
@@ -28,7 +28,7 @@ public class ServerMembership {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ServerMembership that = (ServerMembership) o;
+        Membership that = (Membership) o;
         return Objects.equals(serverName, that.serverName);
     }
 
@@ -45,11 +45,11 @@ public class ServerMembership {
         return DateUtil.getTimeStamp() - timeStamp > thresholdSeconds * 1000;
     }
 
-    public boolean isMoreUpToDateInfo(ServerMembership membership) {
+    public boolean isMoreUpToDateInfo(Membership membership) {
         return membership.getHeartbeat() > this.heartbeat;
     }
 
-    public ServerMembership updateStatus(Status status) {
+    public Membership updateStatus(Status status) {
         this.status = status;
         return this;
     }

@@ -1,6 +1,6 @@
 package com.zeromh.kvdb.server.gossip.interfaces;
 
-import com.zeromh.kvdb.server.common.domain.ServerMembership;
+import com.zeromh.kvdb.server.common.domain.Membership;
 import com.zeromh.kvdb.server.gossip.application.GossipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,15 +19,15 @@ public class GossipController {
     private final GossipService gossipService;
 
     @PostMapping
-    public Mono<Boolean> updateServerMembership(@RequestBody List<ServerMembership> serverMemberships) {
-        return Flux.fromIterable(serverMemberships)
+    public Mono<Boolean> updateServerMembership(@RequestBody List<Membership> memberships) {
+        return Flux.fromIterable(memberships)
                 .flatMap(gossipService::updateHeartbeat)
                 .collectList()
                 .thenReturn(true);
     }
 
     @GetMapping
-    public Flux<ServerMembership> getServerMembershipList() {
+    public Flux<Membership> getServerMembershipList() {
         return gossipService.getServerMembershipList();
     }
 }

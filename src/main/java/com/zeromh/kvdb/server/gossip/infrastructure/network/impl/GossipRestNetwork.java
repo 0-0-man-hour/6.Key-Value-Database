@@ -1,7 +1,7 @@
 package com.zeromh.kvdb.server.gossip.infrastructure.network.impl;
 
 import com.zeromh.consistenthash.domain.model.server.HashServer;
-import com.zeromh.kvdb.server.common.domain.ServerMembership;
+import com.zeromh.kvdb.server.common.domain.Membership;
 import com.zeromh.kvdb.server.common.infrastructure.WebclientGenerator;
 import com.zeromh.kvdb.server.gossip.infrastructure.network.GossipNetworkPort;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class GossipRestNetwork implements GossipNetworkPort {
 
 
     @Override
-    public Mono<Boolean> propagateStatus(HashServer server, List<ServerMembership> memberships) {
+    public Mono<Boolean> propagateStatus(HashServer server, List<Membership> memberships) {
         return webclientGenerator.post(server, REQUEST_GOSSIP, memberships)
                 .bodyToMono(Boolean.class)
                 .doOnError(e -> log.error("[Gossip] Server: {}, request failed, message: {}", server.getName(), e.getMessage()))

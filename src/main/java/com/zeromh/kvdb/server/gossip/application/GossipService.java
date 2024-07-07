@@ -1,9 +1,8 @@
 package com.zeromh.kvdb.server.gossip.application;
 
-import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.Status;
-import com.zeromh.kvdb.server.common.domain.ServerMembership;
+import com.zeromh.kvdb.server.common.domain.Membership;
 import com.zeromh.kvdb.server.gossip.infrastructure.network.GossipNetworkPort;
 import com.zeromh.kvdb.server.common.util.DateUtil;
 import jakarta.annotation.PostConstruct;
@@ -16,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,7 +23,7 @@ public class GossipService {
 
     private final ServerManager serverManager;
     private final GossipNetworkPort gossipNetworkPort;
-    private Map<String, ServerMembership> membershipMap;
+    private Map<String, Membership> membershipMap;
 
     @Value("${gossip.threshold.temporary}")
     private long temporaryThresholdSeconds;
@@ -47,7 +45,7 @@ public class GossipService {
         membershipMap = new ConcurrentHashMap<>();
         serverManager.getServerMap().values()
                 .forEach(server -> membershipMap.put(server.getName(),
-                                ServerMembership.builder()
+                                Membership.builder()
                                 .serverName(server.getName())
                                 .timeStamp(DateUtil.getTimeStamp())
                                 .status(Status.alive)
@@ -55,19 +53,19 @@ public class GossipService {
     }
 
     public Mono<Boolean> updateMyHeartbeat() {
-        ServerMembership serverMembership = membershipMap.get(serverManager.getMyServer().getName());
-        serverMembership.increaseHeartbeat();
-        serverMembership.setTimeStamp(DateUtil.getTimeStamp());
+        Membership membership = membershipMap.get(serverManager.getMyServer().getName());
+        membership.increaseHeartbeat();
+        membership.setTimeStamp(DateUtil.getTimeStamp());
 
         return Mono.just(true);
     }
 
-    public Mono<Boolean> updateHeartbeat(ServerMembership requestMembership) {
+    public Mono<Boolean> updateHeartbeat(Membership requestMembership) {
         if (!membershipMap.containsKey(requestMembership.getServerName())) {
             membershipMap.put(requestMembership.getServerName(), requestMembership);
             return Mono.just(true);
         }
-        ServerMembership saveMembership = membershipMap.get(requestMembership.getServerName());
+        Membership saveMembership = membershipMap.get(requestMembership.getServerName());
         Status saveStatus = saveMembership.getStatus();
         if (saveMembership.isMoreUpToDateInfo(requestMembership)) {
             if (saveStatus.equals(Status.temporary) && !requestMembership.isNotUpdatedLongTime(temporaryThresholdSeconds)) {
@@ -88,14 +86,14 @@ public class GossipService {
                 .flatMap(server -> gossipNetworkPort.propagateStatus(server, membershipMap.values().stream().toList()));
     }
 
-    public Flux<ServerMembership> findTemporaryFailureServer() {
+    public Flux<Membership> findTemporaryFailureServer() {
         return Flux.fromIterable(membershipMap.values())
                 .filter(membership -> membership.isNotUpdatedLongTime(temporaryThresholdSeconds) && membership.getStatus().equals(Status.alive))
                 .doOnNext(membership -> log.info("[Gossip] Temporary failure has been detected on {}, last update time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())))
                 .map(membership -> membership.updateStatus(Status.temporary));
     }
 
-    public Flux<ServerMembership> findPermanentFailureServer() {
+    public Flux<Membership> findPermanentFailureServer() {
         return Flux.fromIterable(membershipMap.values())
                 .filter(membership -> membership.isNotUpdatedLongTime(permanentThresholdSeconds) && membership.getStatus().equals(Status.temporary))
                 .doOnNext(membership -> log.info("[Gossip] Permanent failure has been detected on {}, last update time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())))
@@ -103,11 +101,11 @@ public class GossipService {
                 .map(membership -> membershipMap.remove(membership.getServerName()));
     }
 
-    public void deleteMembership(ServerMembership serverMembership) {
-        membershipMap.remove(serverMembership.getServerName());
+    public void deleteMembership(Membership membership) {
+        membershipMap.remove(membership.getServerName());
     }
 
-    public Flux<ServerMembership> getServerMembershipList() {
+    public Flux<Membership> getServerMembershipList() {
         return Flux.fromIterable(membershipMap.values());
     }
 }
