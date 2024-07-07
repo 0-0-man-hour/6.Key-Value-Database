@@ -2,14 +2,13 @@ package com.zeromh.kvdb.server.common;
 
 import com.zeromh.consistenthash.application.dto.ServerStatus;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
-import com.zeromh.kvdb.server.node.application.impl.ServerService;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,22 +16,26 @@ import java.util.List;
 public class ServerManager {
     private final ServerStatus serverStatus;
     private final HashServer myServer;
-    private final ServerService serverService;
-
-    private List<HashServer> serverList;
+    private Map<String, HashServer> serverMap;
 
     @PostConstruct
     public void init() {
         //초기 서버 설정
-        serverList = new ArrayList<>(serverStatus.getServerList());
+        serverMap = serverStatus.getServerList().stream().collect(Collectors.toMap(
+                HashServer::getName, server -> server
+        ));
     }
 
-    public boolean addServer(HashServer server) {
-        return serverList.add(server);
+    public HashServer getServerByName(String serverName) {
+        return serverMap.get(serverName);
     }
 
-    public boolean deleteServer(HashServer server) {
-        return serverList.remove(server);
+    public HashServer addServer(HashServer server) {
+        return serverMap.put(server.getName(), server);
+    }
+
+    public HashServer deleteServer(HashServer server) {
+        return serverMap.remove(server.getName());
     }
 
 }
