@@ -4,7 +4,8 @@ import com.zeromh.consistenthash.application.dto.ServerStatus;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
-import com.zeromh.kvdb.server.node.application.ServerUseCase;
+import com.zeromh.kvdb.server.common.domain.ServerMembership;
+import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.storage.infrastructure.network.NetworkPort;
 import jakarta.annotation.PostConstruct;
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerService implements ServerUseCase {
+public class NodeService implements NodeUseCase {
 
 
     private final ServerManager serverManager;
@@ -40,6 +41,13 @@ public class ServerService implements ServerUseCase {
     @Override
     public ServerStatus deleteServer(HashServer hashServer) {
         return null;
+    }
+
+    @Override
+    public Mono<?> deleteServer(ServerMembership serverMembership) {
+        HashServer deleteServer = serverManager.getServerByName(serverMembership.getServerName());
+        hashServicePort.deleteServerInfo(deleteServer);
+        return Mono.just(true);
     }
 
     @Override
