@@ -11,7 +11,7 @@ public interface NodeUseCase {
 
     ServerStatus deleteServer(HashServer hashServer);
 
-    Mono<?>  deleteServer(Membership membership);
+    Mono<HashServer>  deleteServer(Membership membership);
     HashServer getServer(HashKey key);
 
 }

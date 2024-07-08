@@ -34,8 +34,8 @@ public class ServerManager {
         return serverMap.put(server.getName(), server);
     }
 
-    public HashServer deleteServer(HashServer server) {
-        return serverMap.remove(server.getName());
+    public HashServer deleteServer(String serverName) {
+        return serverMap.remove(serverName);
     }
 
 }

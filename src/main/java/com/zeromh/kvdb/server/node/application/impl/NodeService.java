@@ -42,10 +42,10 @@ public class NodeService implements NodeUseCase {
     }
 
     @Override
-    public Mono<?> deleteServer(Membership membership) {
+    public Mono<HashServer> deleteServer(Membership membership) {
         HashServer deleteServer = serverManager.getServerByName(membership.getServerName());
         hashServicePort.deleteServerInfo(deleteServer);
-        return Mono.just(true);
+        return Mono.just(deleteServer);
     }
 
     @Override

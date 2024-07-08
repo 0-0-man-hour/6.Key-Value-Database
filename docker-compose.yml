@@ -17,7 +17,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver1
       - SERVER_NAME=myserver1
       - SERVER_URL=myserver1
-      - SERVER_PORT=8083
+      - SERVER_PORT=8081
     depends_on:
       - mongodb
 
@@ -33,7 +33,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver2
       - SERVER_NAME=myserver2
       - SERVER_URL=myserver2
-      - SERVER_PORT=8084
+      - SERVER_PORT=8082
     depends_on:
       - mongodb
 
@@ -49,7 +49,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver3
       - SERVER_NAME=myserver3
       - SERVER_URL=myserver3
-      - SERVER_PORT=8085
+      - SERVER_PORT=8083
     depends_on:
       - mongodb
 
@@ -65,7 +65,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver4
       - SERVER_NAME=myserver4
       - SERVER_URL=myserver4
-      - SERVER_PORT=8086
+      - SERVER_PORT=8084
     depends_on:
       - mongodb
 
@@ -80,7 +80,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver5
       - SERVER_NAME=myserver5
       - SERVER_URL=myserver5
-      - SERVER_PORT=8087
+      - SERVER_PORT=8085
     depends_on:
       - mongodb
 
@@ -95,7 +95,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver6
       - SERVER_NAME=myserver6
       - SERVER_URL=myserver6
-      - SERVER_PORT=8088
+      - SERVER_PORT=8086
     depends_on:
       - mongodb
 

@@ -20,9 +20,7 @@ public class GossipController {
 
     @PostMapping
     public Mono<Boolean> updateServerMembership(@RequestBody List<Membership> memberships) {
-        return Flux.fromIterable(memberships)
-                .flatMap(gossipService::updateHeartbeat)
-                .collectList()
+        return gossipService.updateHeartbeatList(memberships)
                 .thenReturn(true);
     }
 
