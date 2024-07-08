@@ -16,20 +16,19 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class MongoRepository implements StorePort {
     private final ReactiveMongoTemplate reactiveMongoTemplate;
-    private static final String REPLICA = "R_";
-
+    private static final String COLLECTION = "save";
     @Override
-    public Mono<DataObject> getValue(HashKey key, boolean isReplica) {
-        String collectionName = (isReplica?REPLICA:"")+key.getServerHash();
-        return reactiveMongoTemplate.findById(key.getKey(), DataObject.class, collectionName);
+    public Mono<DataObject> getValue(HashKey key) {
+        return reactiveMongoTemplate.findById(key.getKey(), DataObject.class, COLLECTION);
     }
 
     @Override
-    public Mono<DataObject> saveValue(HashKey key, DataObject dataObject, boolean isReplica) {
-        String collectionName = (isReplica?REPLICA:"")+key.getServerHash();
+    public Mono<DataObject> saveValue(HashKey key, DataObject dataObject) {
         Query query = new Query(Criteria.where("_id").is(dataObject.getKey()));
-        Update update = new Update().set("value", dataObject.getValue());
-        return reactiveMongoTemplate.upsert(query, update, collectionName)
+        Update update = new Update()
+                .set("value", dataObject.getValue())
+                .set("vectorClock", dataObject.getVectorClock());
+        return reactiveMongoTemplate.upsert(query, update, COLLECTION)
                 .thenReturn(dataObject);
     }
 }

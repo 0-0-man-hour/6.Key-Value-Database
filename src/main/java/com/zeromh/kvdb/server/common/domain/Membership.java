@@ -46,7 +46,7 @@ public class Membership {
     }
 
     public boolean isMoreUpToDateInfo(Membership membership) {
-        return membership.getHeartbeat() > this.heartbeat;
+        return  this.getTimeStamp() > membership.getTimeStamp();
     }
 
     public Membership updateStatus(Status status) {

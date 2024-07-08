@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface StorePort {
 
-    Mono<DataObject> getValue(HashKey key, boolean isReplica);
+    Mono<DataObject> getValue(HashKey key);
 
-    Mono<DataObject> saveValue(HashKey key, DataObject dataObject, boolean isReplica);
+    Mono<DataObject> saveValue(HashKey key, DataObject dataObject);
 }

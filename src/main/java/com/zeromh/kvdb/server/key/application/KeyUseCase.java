@@ -5,11 +5,11 @@ import com.zeromh.kvdb.server.common.domain.DataObject;
 import reactor.core.publisher.Mono;
 
 public interface KeyUseCase {
+    Mono<DataObject> intermediateGetData(HashKey key);
+
     Mono<DataObject> getData(HashKey key);
 
-    Mono<DataObject> getReplicaData(HashKey key);
+    Mono<Boolean> intermediateSaveData(DataObject dataObject);
 
-    Mono<Boolean> saveData(DataObject dataObject);
-
-    Mono<Boolean> saveReplicaData(DataObject dataObject);
+    Mono<DataObject> saveData(HashKey key, DataObject dataObject);
 }
