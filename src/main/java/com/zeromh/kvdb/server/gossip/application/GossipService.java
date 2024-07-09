@@ -52,7 +52,7 @@ public class GossipService {
         return Mono.just(true);
     }
 
-    public Mono<Boolean> updateHeartbeatList(List<Membership>  requestMemberships) {
+    public Mono<Boolean> updateHeartbeatList(List<Membership> requestMemberships) {
         return Flux.fromIterable(requestMemberships)
                 .filter(membership -> !membership.isNotUpdatedLongTime(permanentThresholdSeconds))
                 .flatMap(this::updateHeartbeat)
@@ -87,14 +87,16 @@ public class GossipService {
     }
 
     public Flux<Membership> findTemporaryFailureServer() {
-        return Flux.fromIterable(membershipMap.values())
+        return Flux.fromIterable(serverManager.getServerMap().keySet())
+                .mapNotNull(serverName -> membershipMap.get(serverName))
                 .filter(membership -> membership.isNotUpdatedLongTime(temporaryThresholdSeconds) && membership.getStatus().equals(Status.alive))
                 .doOnNext(membership -> log.info("[Gossip] Temporary failure has been detected on {}, last update time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())))
                 .map(membership -> membership.updateStatus(Status.temporary));
     }
 
     public Flux<Membership> findPermanentFailureServer() {
-        return Flux.fromIterable(membershipMap.values())
+        return Flux.fromIterable(serverManager.getServerMap().keySet())
+                .mapNotNull(serverName -> membershipMap.get(serverName))
                 .filter(membership -> membership.isNotUpdatedLongTime(permanentThresholdSeconds) && membership.getStatus().equals(Status.temporary))
                 .doOnNext(membership -> log.info("[Gossip] Permanent failure has been detected on {}, last update time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())))
                 .map(membership -> {
