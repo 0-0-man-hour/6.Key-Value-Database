@@ -38,11 +38,12 @@ public class Membership {
     }
 
     public boolean isNotUpdatedLongTime(long thresholdSeconds) {
-        long diff = DateUtil.getTimeStamp() - timeStamp;
-        if (diff > thresholdSeconds * 1000) {
-            log.info("difference: {}, threshold: {}",DateUtil.getTimeStamp() - timeStamp, thresholdSeconds*1000);
-        }
         return DateUtil.getTimeStamp() - timeStamp > thresholdSeconds * 1000;
+    }
+
+    public boolean isRecovered(long thresholdSeconds) {
+        return (DateUtil.getTimeStamp() - timeStamp < thresholdSeconds * 1000) &&
+                this.status.equals(Status.temporary);
     }
 
     public boolean isMoreUpToDateInfo(Membership membership) {

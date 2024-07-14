@@ -19,4 +19,6 @@ public class DataObject {
     Object value;
     @Setter
     VectorClock vectorClock;
+    @Setter
+    String serverName;
 }

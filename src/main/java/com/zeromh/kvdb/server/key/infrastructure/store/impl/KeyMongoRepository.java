@@ -2,7 +2,7 @@ package com.zeromh.kvdb.server.key.infrastructure.store.impl;
 
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.kvdb.server.common.domain.DataObject;
-import com.zeromh.kvdb.server.key.infrastructure.store.StorePort;
+import com.zeromh.kvdb.server.key.infrastructure.store.KeyStorePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,9 +14,10 @@ import reactor.core.publisher.Mono;
 
 @Repository
 @RequiredArgsConstructor
-public class MongoRepository implements StorePort {
+public class KeyMongoRepository implements KeyStorePort {
     private final ReactiveMongoTemplate reactiveMongoTemplate;
     private static final String COLLECTION = "save";
+
     @Override
     public Mono<DataObject> getValue(HashKey key) {
         return reactiveMongoTemplate.findById(key.getKey(), DataObject.class, COLLECTION);

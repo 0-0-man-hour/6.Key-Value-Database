@@ -7,6 +7,8 @@ import com.zeromh.kvdb.server.gossip.infrastructure.network.GossipNetworkPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -27,5 +29,12 @@ public class GossipRestNetwork implements GossipNetworkPort {
                 .onErrorComplete();
     }
 
+    @Override
+    public Mono<Boolean> checkServerHealth(HashServer myServer, HashServer server) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("serverName", myServer.getName());
+        return webclientGenerator.get(server, REQUEST_GOSSIP + "/health", params)
+                .bodyToMono(Boolean.class);
+    }
 
 }

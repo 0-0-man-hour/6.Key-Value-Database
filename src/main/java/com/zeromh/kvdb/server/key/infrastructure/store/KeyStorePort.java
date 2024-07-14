@@ -4,7 +4,7 @@ import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import reactor.core.publisher.Mono;
 
-public interface StorePort {
+public interface KeyStorePort {
 
     Mono<DataObject> getValue(HashKey key);
 

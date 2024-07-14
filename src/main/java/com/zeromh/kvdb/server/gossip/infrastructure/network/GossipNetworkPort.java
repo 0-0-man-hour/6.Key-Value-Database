@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface GossipNetworkPort {
     Mono<Boolean> propagateStatus(HashServer server, List<Membership> memberships);
+
+    Mono<Boolean> checkServerHealth(HashServer myServer, HashServer server);
 }

@@ -1,6 +1,7 @@
 package com.zeromh.kvdb.server.gossip.interfaces;
 
 import com.zeromh.kvdb.server.common.ServerManager;
+import com.zeromh.kvdb.server.common.domain.Status;
 import com.zeromh.kvdb.server.gossip.application.GossipService;
 import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +18,14 @@ public class GossipScheduler {
     @Scheduled(fixedRate = 1000*5, initialDelay = 1000*5)
     public void updateHeartbeat() {
         gossipService.updateMyHeartbeat()
+                .thenMany(gossipService.findRecoveredServer())
+                .flatMap(nodeUseCase::updateServerStatus)
                 .thenMany(gossipService.findTemporaryFailureServer())
-                .collectList()
-                .flatMapMany(list -> gossipService.propagateStatus())
+                .flatMap(nodeUseCase::updateServerStatus)
+                .thenMany(gossipService.propagateStatus())
                 .thenMany(gossipService.findPermanentFailureServer())
                 .flatMap(nodeUseCase::deleteServer)
                 .map(hashServer -> serverManager.deleteServer(hashServer.getName()))
-                .subscribe();
-    }
-
-//    @Scheduled(fixedRate = 1000*10)
-    public void checkServerFailure() {
-        gossipService.findTemporaryFailureServer()
-                .collectList()
-                .flatMapMany(list -> gossipService.propagateStatus())
-                .thenMany(gossipService.findPermanentFailureServer())
-                .flatMap(nodeUseCase::deleteServer)
                 .subscribe();
     }
 }

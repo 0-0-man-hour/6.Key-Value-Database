@@ -5,6 +5,7 @@ import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
 import com.zeromh.kvdb.server.common.domain.Membership;
+import com.zeromh.kvdb.server.common.domain.Status;
 import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import com.zeromh.kvdb.server.common.ServerManager;
 import jakarta.annotation.PostConstruct;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,9 +28,9 @@ public class NodeService implements NodeUseCase {
     @PostConstruct
     public void init() {
         //초기 서버 설정
-        Mono.just(serverManager.getServerStatus())
+        Mono.just(serverManager.getServerList())
             .doOnNext(hashServicePort::setServer)
-                .doOnNext(status -> log.info("{} servers registered.", status.getServerList()))
+                .doOnNext(serverList -> log.info("{} servers registered.", serverList))
                 .subscribe();
     }
 
@@ -51,6 +54,20 @@ public class NodeService implements NodeUseCase {
     @Override
     public HashServer getServer(HashKey key) {
         return null;
+    }
+
+    @Override
+    public Mono<Boolean> updateServerStatus(Membership membership) {
+        HashServer updateServer = serverManager.getServerByName(membership.getServerName());
+        List<HashServer> serverList = serverManager.updateServerStatus(updateServer, membership.getStatus().isAlive());
+        hashServicePort.setServer(serverList);
+
+        return Mono.just(true);
+    }
+
+    public void setServerStatus(Membership membership) {
+
+
     }
 
 }

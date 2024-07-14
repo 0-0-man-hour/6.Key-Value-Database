@@ -2,8 +2,10 @@ package com.zeromh.kvdb.server.common.infrastructure;
 
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
 
@@ -14,6 +16,16 @@ public class WebclientGenerator {
         var webclient = WebClient.builder().baseUrl(makeServerUrl(server)).build();
         return webclient.get()
                 .uri(uriBuilder -> uriBuilder.path(path).build())
+                .retrieve();
+    }
+
+    public ResponseSpec get(HashServer server, String path, MultiValueMap<String, String> params) {
+        var webclient = WebClient.builder().baseUrl(makeServerUrl(server)).build();
+        return webclient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(path)
+                        .queryParams(params)
+                        .build())
                 .retrieve();
     }
 

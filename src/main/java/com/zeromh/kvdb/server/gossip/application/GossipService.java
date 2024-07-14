@@ -52,30 +52,25 @@ public class GossipService {
         return Mono.just(true);
     }
 
-    public Mono<Boolean> updateHeartbeatList(List<Membership> requestMemberships) {
+    public Flux<Boolean> updateHeartbeat(List<Membership> requestMemberships) {
         return Flux.fromIterable(requestMemberships)
                 .filter(membership -> !membership.isNotUpdatedLongTime(permanentThresholdSeconds))
-                .flatMap(this::updateHeartbeat)
-                .collectList()
-                .thenReturn(true);
+                .map(this::updateHeartbeatList);
+
     }
 
-    public Mono<Boolean> updateHeartbeat(Membership requestMembership) {
+    private Boolean updateHeartbeatList(Membership requestMembership) {
         if (!membershipMap.containsKey(requestMembership.getServerName())) {
             membershipMap.put(requestMembership.getServerName(), requestMembership);
-            return Mono.just(true);
+            return false;
         }
+
         Membership saveMembership = membershipMap.get(requestMembership.getServerName());
-        Status saveStatus = saveMembership.getStatus();
         if (requestMembership.isMoreUpToDateInfo(saveMembership)) {
-            if (saveStatus.equals(Status.temporary) && !requestMembership.isNotUpdatedLongTime(temporaryThresholdSeconds)) {
-                log.info("[Gossip] Recovered temporary failure of {}, failure time: {}", requestMembership.getServerName(), DateUtil.getDateTimeString(saveMembership.getTimeStamp()));
-            }
-            requestMembership.updateStatus(Status.alive);
+            requestMembership.updateStatus(saveMembership.getStatus());
             membershipMap.put(requestMembership.getServerName(), requestMembership);
-            return Mono.just(true);
         }
-        return Mono.just(false);
+        return true;
     }
 
     public Flux<Boolean> propagateStatus() {
@@ -85,6 +80,18 @@ public class GossipService {
                 .filter(server -> random.nextBoolean())
                 .flatMap(server -> gossipNetworkPort.propagateStatus(server, membershipMap.values().stream().toList()));
     }
+
+
+    public Flux<Membership> findRecoveredServer() {
+        return Flux.fromIterable(serverManager.getServerMap().keySet())
+                .mapNotNull(serverName -> membershipMap.get(serverName))
+                .filter(membership -> membership.isRecovered(temporaryThresholdSeconds))
+                .flatMap(membership -> gossipNetworkPort.checkServerHealth(serverManager.getMyServer(),  serverManager.getServerByName(membership.getServerName()))
+                        .thenReturn(membership))
+                .map(membership -> membership.updateStatus(Status.alive))
+                .doOnNext(membership -> log.info("[Gossip] Recovered temporary failure of {}, failure time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())));
+    }
+
 
     public Flux<Membership> findTemporaryFailureServer() {
         return Flux.fromIterable(serverManager.getServerMap().keySet())
@@ -100,7 +107,6 @@ public class GossipService {
                 .filter(membership -> membership.isNotUpdatedLongTime(permanentThresholdSeconds) && membership.getStatus().equals(Status.temporary))
                 .doOnNext(membership -> log.info("[Gossip] Permanent failure has been detected on {}, last update time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())))
                 .map(membership -> {
-                    membership.updateStatus(Status.permanent);
                     return membershipMap.remove(membership.getServerName());
                 });
     }
