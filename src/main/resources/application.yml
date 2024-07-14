@@ -4,12 +4,12 @@ server:
   port: ${SERVER_PORT:8081}
   nums-of-node: 4
   server-list:
-    - myserver1:myserver1:8081:8083:4
-    - myserver2:myserver2:8082:8083:4
-    - myserver3:myserver3:8083:8083:4
-    - myserver4:myserver4:8084:8083:4
-    - myserver5:myserver5:8085:8083:4
-    - myserver6:myserver6:8086:8083:4
+    - myserver1:myserver1:8081:4
+    - myserver2:myserver2:8082:4
+    - myserver3:myserver3:8083:4
+    - myserver4:myserver4:8084:4
+    - myserver5:myserver5:8085:4
+    - myserver6:myserver6:8086:4
 
 quorum:
   number-of-replica: 3
@@ -18,8 +18,8 @@ quorum:
 
 gossip:
   threshold:
-    temporary: 15
-    permanent: 30
+    temporary: 20
+    permanent: 300
 
 hash:
   function: md5 #custom
