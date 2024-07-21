@@ -32,13 +32,7 @@ public class HandoffService {
         return handoffNetworkPort.requestPostLeaveData(hashServer, handoffDto);
     }
 
-    public Flux<DataObject> fetchLeftData(String serverName) {
-        log.info("[Handoff] Request to fetch left data to {}", serverName);
-        HashServer hashServer = serverManager.getServerByName(serverName);
-        return handoffNetworkPort.requestGetLeftData(hashServer, serverManager.getMyServer());
-    }
-
-    public Flux<DataObject> getLeftData(String serverName) {
+    public Flux<DataObject> getAllLeftData(String serverName) {
         return handoffStorePort.getAllValueAndRemove(serverName);
     }
 

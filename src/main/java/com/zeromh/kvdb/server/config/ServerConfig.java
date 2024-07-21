@@ -16,7 +16,7 @@ public class ServerConfig {
 
     @Bean
     public HashServer myHashServer() {
-        log.info(serverProperty.getName());
+        log.info("[Config] Server: {}", serverProperty.getName());
         return HashServer.builder()
                 .name(serverProperty.getName())
                 .port(serverProperty.getPort())

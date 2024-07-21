@@ -7,12 +7,13 @@ import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import com.zeromh.kvdb.server.common.domain.VectorClock;
+import com.zeromh.kvdb.server.common.dto.MerkleHashDto;
 import com.zeromh.kvdb.server.config.QuorumProperty;
-import com.zeromh.kvdb.server.gossip.application.GossipService;
 import com.zeromh.kvdb.server.handoff.application.HandoffService;
 import com.zeromh.kvdb.server.key.application.KeyUseCase;
 import com.zeromh.kvdb.server.key.infrastructure.network.KeyNetworkPort;
 import com.zeromh.kvdb.server.key.infrastructure.store.KeyStorePort;
+import com.zeromh.kvdb.server.merkle.application.MerkleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,8 +33,9 @@ public class KeyService implements KeyUseCase {
     private final HashServicePort hashServicePort;
     private final QuorumProperty quorumProperty;
 
-    private final GossipService gossipService;
     private final HandoffService handoffService;
+    private final MerkleService merkleService;
+
     private final KeyNetworkPort keyNetworkPort;
     private final KeyStorePort keyStorePort;
 
@@ -52,8 +53,6 @@ public class KeyService implements KeyUseCase {
                     .flatMap(tuple2 -> checkConflictAndSendLatestVersion(key, tuple2));
         }
 
-        responsibleServers.sort(Comparator.comparing((HashServer server) -> gossipService.getMembershipMap().get(server.getName()).getTimeStamp())
-                .reversed());
         return intermediateGetDataToResponsibleServers(responsibleServers, key, 0);
     }
 
@@ -95,13 +94,14 @@ public class KeyService implements KeyUseCase {
         if (isConflict) {
             latest.getT1().getVectorClock().tick(serverManager.getMyServer().getName());
             log.info("[Key] resolve conflict data. update key: {}", latest.getT1().getKey());
-            Tuple2<DataObject, HashServer> finalLatest = latest;
+            DataObject finalData = latest.getT1();
+            finalData.setMerkleHashDto(MerkleHashDto.fromHashKey(key));
             return Flux.fromIterable(tupleData)
                     .flatMap(dataObject -> {
                         if (dataObject.getT2().equals(serverManager.getMyServer())) {
-                            return keyStorePort.saveValue(key, finalLatest.getT1());
+                            return saveData(key, finalData);
                         }
-                        return keyNetworkPort.saveValue(dataObject.getT2(), finalLatest.getT1(), true);
+                        return keyNetworkPort.saveValue(dataObject.getT2(), finalData, true);
                     })
                     .then(Mono.just(latest.getT1()));
         }
@@ -114,10 +114,9 @@ public class KeyService implements KeyUseCase {
         List<HashServerDto> targetServers = hashServicePort.getAliveServers(key, quorumProperty.getNumberOfReplica());
         List<HashServer> responsibleServers = new ArrayList<>(targetServers.stream().filter(hashServerDto -> hashServerDto.getFailureServer() == null)
                 .map(HashServerDto::getServer).toList());
-        for (HashServer hashServer : responsibleServers) {
-            log.info("[Key] responsible: {}", hashServer.getName());
-        }
+
         if (responsibleServers.contains(serverManager.getMyServer())) {
+            dataObject.setMerkleHashDto(MerkleHashDto.fromHashKey(key));
             return getDataAndUpdateVectorClock(key, dataObject)
                     .thenMany(Flux.fromIterable(targetServers))
                     .flatMap(targetServer -> saveDataToServers(targetServer, key, dataObject).zipWith(Mono.just(targetServer.getServer())))
@@ -126,8 +125,6 @@ public class KeyService implements KeyUseCase {
                     .then(Mono.just(true));
         }
 
-        responsibleServers.sort(Comparator.comparing((HashServer server) -> gossipService.getMembershipMap().get(server.getName()).getTimeStamp())
-                .reversed());
         return intermediateSaveDataToResponsibleServers(responsibleServers, dataObject, 0);
     }
 
@@ -179,6 +176,8 @@ public class KeyService implements KeyUseCase {
 
     @Override
     public Mono<DataObject> saveData(HashKey key, DataObject request) {
-        return keyStorePort.saveValue(key, request);
+        return keyStorePort.saveValue(key, request)
+                .flatMap(merkleService::updateMerkle)
+                .thenReturn(request);
     }
 }

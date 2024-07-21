@@ -1,5 +1,6 @@
 package com.zeromh.kvdb.server.common.domain;
 
+import com.zeromh.kvdb.server.common.dto.MerkleHashDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,7 @@ public class DataObject {
     VectorClock vectorClock;
     @Setter
     String serverName;
+    @Setter
+    MerkleHashDto merkleHashDto;
+
 }

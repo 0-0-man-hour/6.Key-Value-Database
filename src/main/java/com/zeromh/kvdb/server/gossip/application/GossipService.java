@@ -1,10 +1,16 @@
 package com.zeromh.kvdb.server.gossip.application;
 
+import com.zeromh.consistenthash.domain.model.key.HashKey;
+import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.Status;
 import com.zeromh.kvdb.server.common.domain.Membership;
+import com.zeromh.kvdb.server.gossip.dto.GossipUpdateDto;
 import com.zeromh.kvdb.server.gossip.infrastructure.network.GossipNetworkPort;
 import com.zeromh.kvdb.server.common.util.DateUtil;
+import com.zeromh.kvdb.server.handoff.infrastructure.network.HandoffNetworkPort;
+import com.zeromh.kvdb.server.key.application.KeyUseCase;
+import com.zeromh.kvdb.server.merkle.application.MerkleService;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +30,10 @@ public class GossipService {
 
     private final ServerManager serverManager;
     private final GossipNetworkPort gossipNetworkPort;
+    private final HandoffNetworkPort handoffNetworkPort;
+    private final KeyUseCase keyUseCase;
+    private final MerkleService merkleService;
+
     @Getter
     private Map<String, Membership> membershipMap;
 
@@ -33,15 +43,35 @@ public class GossipService {
     private long permanentThresholdSeconds;
 
     @PostConstruct
-    public void init() {
+    public void init() throws InterruptedException {
         membershipMap = new ConcurrentHashMap<>();
-        serverManager.getServerMap().values()
-                .forEach(server -> membershipMap.put(server.getName(),
-                                Membership.builder()
-                                .serverName(server.getName())
-                                .timeStamp(DateUtil.getTimeStamp())
-                                .status(Status.alive)
-                                .build()));
+        Collection<HashServer> servers = serverManager.getServerMap().values();
+        servers.forEach(server -> membershipMap.put(server.getName(),
+                Membership.builder()
+                    .serverName(server.getName())
+                    .timeStamp(DateUtil.getTimeStamp())
+                    .status(Status.alive)
+                .build()));
+
+//        Thread.sleep(1000*3);
+//        checkMyServerInFailure(servers)
+//                .filter(list -> !list.isEmpty())
+//                .flatMapMany(list -> Flux.fromIterable(servers)
+//                        .filter(server -> !server.equals(serverManager.getMyServer()))
+//                        .flatMap(server -> handoffNetworkPort.requestGetLeftData(server, serverManager.getMyServer()))
+//                        .flatMap(dataObject -> keyUseCase.saveData(HashKey.builder().key(dataObject.getKey()).build(), dataObject))
+//                        .thenMany(Flux.fromIterable(servers))
+//                        .flatMap(merkleService::checkTobeSameMerkle)
+//                ).subscribe();
+    }
+
+    private Mono<List<Boolean>> checkMyServerInFailure(Collection<HashServer> servers) {
+        return Flux.fromIterable(servers)
+                .filter(server -> !server.equals(serverManager.getMyServer()))
+                .flatMap(server -> gossipNetworkPort.checkMyServerHealth(serverManager.getMyServer(), server))
+                .filter(aBoolean -> !aBoolean)
+                .collectList();
+
     }
 
     public Mono<Boolean> updateMyHeartbeat() {
@@ -52,10 +82,13 @@ public class GossipService {
         return Mono.just(true);
     }
 
-    public Flux<Boolean> updateHeartbeat(List<Membership> requestMemberships) {
-        return Flux.fromIterable(requestMemberships)
+    public Mono<Membership> updateHeartbeat(GossipUpdateDto gossipUpdateDto) {
+        Membership requestServerMembership = membershipMap.get(gossipUpdateDto.getRequestServer()).copyMembership();
+
+        return Flux.fromIterable(gossipUpdateDto.getMemberships())
                 .filter(membership -> !membership.isNotUpdatedLongTime(permanentThresholdSeconds))
-                .map(this::updateHeartbeatList);
+                .map(this::updateHeartbeatList)
+                .then(Mono.just(requestServerMembership));
 
     }
 
@@ -73,12 +106,26 @@ public class GossipService {
         return true;
     }
 
-    public Flux<Boolean> propagateStatus() {
+    public Flux<String> propagateStatus() {
         Random random = new Random();
         return Flux.fromIterable(serverManager.getServerMap().values())
                 .filter(server -> !server.equals(serverManager.getMyServer()))
                 .filter(server -> random.nextBoolean())
-                .flatMap(server -> gossipNetworkPort.propagateStatus(server, membershipMap.values().stream().toList()));
+                .flatMap(server -> gossipNetworkPort.propagateStatus(server, new GossipUpdateDto(serverManager.getMyServer().getName(), membershipMap.values().stream().toList())))
+                .filter(myMembership -> !myMembership.getStatus().isAlive())
+                .take(1)
+                .doOnNext(membership -> log.info("[Gossip] server was in a state of failure."))
+                .flatMap(membership -> fetchHandoffDataAndCheckMerkleValue());
+    }
+
+    private Flux<String> fetchHandoffDataAndCheckMerkleValue() {
+        Collection<HashServer> servers = serverManager.getServerMap().values();
+        return Flux.fromIterable(servers)
+                .filter(server -> !server.equals(serverManager.getMyServer()))
+                .flatMap(server -> handoffNetworkPort.requestGetLeftData(server, serverManager.getMyServer()))
+                .flatMap(dataObject -> keyUseCase.saveData(HashKey.builder().key(dataObject.getKey()).build(), dataObject))
+                .thenMany(Flux.fromIterable(servers))
+                .flatMap(merkleService::checkTobeSameMerkle);
     }
 
 
@@ -86,7 +133,7 @@ public class GossipService {
         return Flux.fromIterable(serverManager.getServerMap().keySet())
                 .mapNotNull(serverName -> membershipMap.get(serverName))
                 .filter(membership -> membership.isRecovered(temporaryThresholdSeconds))
-                .flatMap(membership -> gossipNetworkPort.checkServerHealth(serverManager.getMyServer(),  serverManager.getServerByName(membership.getServerName()))
+                .flatMap(membership -> gossipNetworkPort.checkServerHealth(serverManager.getServerByName(membership.getServerName()))
                         .thenReturn(membership))
                 .map(membership -> membership.updateStatus(Status.alive))
                 .doOnNext(membership -> log.info("[Gossip] Recovered temporary failure of {}, failure time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())));
@@ -117,5 +164,9 @@ public class GossipService {
 
     public Flux<Membership> getServerMembershipList() {
         return Flux.fromIterable(membershipMap.values());
+    }
+
+    public boolean checkServerHealth(String serverName) {
+        return membershipMap.get(serverName).getStatus().isAlive();
     }
 }

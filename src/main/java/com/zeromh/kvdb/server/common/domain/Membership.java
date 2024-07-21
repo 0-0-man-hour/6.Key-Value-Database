@@ -54,4 +54,13 @@ public class Membership {
         this.status = status;
         return this;
     }
+
+    public Membership copyMembership() {
+        return Membership.builder()
+                .serverName(this.serverName)
+                .heartbeat(this.heartbeat)
+                .timeStamp(this.timeStamp)
+                .status(this.status)
+                .build();
+    }
 }

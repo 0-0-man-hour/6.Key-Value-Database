@@ -4,10 +4,9 @@ import com.zeromh.consistenthash.application.dto.ServerStatus;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
-import com.zeromh.kvdb.server.common.domain.Membership;
-import com.zeromh.kvdb.server.common.domain.Status;
-import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import com.zeromh.kvdb.server.common.ServerManager;
+import com.zeromh.kvdb.server.common.domain.Membership;
+import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,18 +29,8 @@ public class NodeService implements NodeUseCase {
         //초기 서버 설정
         Mono.just(serverManager.getServerList())
             .doOnNext(hashServicePort::setServer)
-                .doOnNext(serverList -> log.info("{} servers registered.", serverList))
+                .doOnNext(serverList -> log.info("[Node] {} servers registered.", serverList))
                 .subscribe();
-    }
-
-    @Override
-    public Mono<ServerStatus> addServer(HashServer hashServer) {
-            return null;
-    }
-
-    @Override
-    public ServerStatus deleteServer(HashServer hashServer) {
-        return null;
     }
 
     @Override
@@ -68,6 +57,16 @@ public class NodeService implements NodeUseCase {
     public void setServerStatus(Membership membership) {
 
 
+    }
+
+    @Override
+    public Mono<ServerStatus> addServer(HashServer hashServer) {
+        return null;
+    }
+
+    @Override
+    public ServerStatus deleteServer(HashServer hashServer) {
+        return null;
     }
 
 }

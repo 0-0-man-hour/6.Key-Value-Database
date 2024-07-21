@@ -26,6 +26,6 @@ public class HandoffController {
     @GetMapping
     public Flux<DataObject> getAllLeftData(@RequestParam String serverName) {
         log.info("[Handoff] Send all left data of {}", serverName);
-        return handoffService.getLeftData(serverName);
+        return handoffService.getAllLeftData(serverName);
     }
 }

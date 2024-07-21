@@ -33,7 +33,7 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation files('libs/consistenthash-0.0.3-SNAPSHOT-plain.jar')
+    implementation files('libs/consistenthash-0.0.4-SNAPSHOT-plain.jar')
 }
 
 tasks.named('test') {
