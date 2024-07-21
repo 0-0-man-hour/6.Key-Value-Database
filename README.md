@@ -1,6 +1,7 @@
 # 6. Key-Value Database
 
-6장 안정해시에 대한 구현 과제입니다. [Notion 정리: 6장 키-값 저장소](https://puffy-daisy-806.notion.site/6-080d1a2de78c4ab2901c90f533420d4c?pvs=4)  
+6장 안정해시에 대한 구현 과제입니다.  
+[Notion 정리: 6장 키-값 저장소](https://puffy-daisy-806.notion.site/6-080d1a2de78c4ab2901c90f533420d4c?pvs=4)  
 담당자: 박상엽(park-sy)  
 
 |Week|Date|Desc|
