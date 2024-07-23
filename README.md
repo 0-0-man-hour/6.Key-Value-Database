@@ -1,6 +1,6 @@
 # 6. Key-Value Database
 
-6장 안정해시에 대한 구현 과제입니다.  
+6장 키-값 저장소에 대한 구현 과제입니다.  
 [Notion 정리: 6장 키-값 저장소](https://puffy-daisy-806.notion.site/6-080d1a2de78c4ab2901c90f533420d4c?pvs=4)  
 담당자: 박상엽(park-sy)  
 
@@ -12,42 +12,11 @@
 |4주차|24.07.08~|일시적,영구적 장애처리|
 |4주차|24.07.15~|머클 트리 구현 및 문서화|
 
+### 개요
+해당 프로젝트에서는 키-값 저장소는 BASE를 기반으로하여 관리자 없이 서로 상호작용하며 동작하는 DB를 의미한다.
+PUT, GET에 대한 간단한 연산과 데이터 다중화, 일관성, 상호 감시, 데이터 정합성 확인 등을 지원한다.
 
 ### 상세 설계  
-```bash.
-└── com
-    └── zeromh
-        └── kvdb
-            └── server
-                ├── ServerApplication.java
-                ├── application
-                │   ├── KeyUseCase.java
-                │   ├── ServerUseCase.java
-                │   └── impl
-                │       ├── KeyService.java
-                │       └── ServerService.java
-                ├── config
-                │   ├── ConsistentHashConfig.java
-                │   ├── QuorumProperty.java
-                │   ├── ServerConfig.java
-                │   └── ServerProperty.java
-                ├── domain
-                │   └── DataObject.java
-                ├── infrastructure
-                │   ├── network
-                │   │   ├── NetworkPort.java
-                │   │   └── impl
-                │   │       └── RestNetwork.java
-                │   └── store
-                │       ├── StorePort.java
-                │       └── impl
-                │           └── MongoRepository.java
-                └── interfaces
-                    ├── KeyController.java
-                    └── ServerController.java
-
-```
-
 ![image](https://github.com/user-attachments/assets/f66226be-ab1f-42df-8201-884b140a60cc)
 
 
