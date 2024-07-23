@@ -70,7 +70,51 @@ PUT, GET에 대한 간단한 연산과 데이터 다중화, 일관성, 상호 �
 #### 사전 준비
 서버로 사용되는 mongodb와 redis의 사용을 위해서 먼저 docker의 설치가 필요하다.  
 - [docker 다운로드](https://www.docker.com/products/docker-desktop/)
-- shell에 명령어 입력 : docker pull mongo, docker pull mongo
-
+- shell에 명령어 입력하여 필요한 application을 다운로드한다.(grafana와 influxdb는 선택사항)
+```bash.
+$ docker pull mongo
+$ docker pull nginx
+$ docker pull grafana
+$ docker pull influxdb/influxdb
+```
 
 #### 서버 구동 방법
+- 프로젝트 .jar로 빌드
+```bash.
+$ ./gradlew build
+```
+
+- docker-compose 실행
+```bash.
+$ docker-compose -f docker-compose-local.yml up
+```
+<img src = "https://github.com/user-attachments/assets/9fc2a343-6098-428f-a04e-462ef3644de2" width="60%" height="60%">
+
+#### GET 요청 
+- GET: /key/{key}
+- request url example: /key/6
+
+#### PUT 요청 
+- POST: /key
+- request url example: /key
+- request body:
+``` json.
+{
+    "key": "key",
+    "value": "value"
+}
+```
+
+
+### 결과
+Grafana와 InfluxDB를 통해 모니터링을 구축하였으며, 이를 통해서 결과를 확인하였다.
+
+#### 다중화 지원
+
+#### 일관성 지원
+
+#### 가십 프로토콜을 통한 서버 상태 확인 지원
+
+#### 일시 장애 시 임시 위탁 기능을 통한 데이터 관리
+
+#### 머클 트리를 이용한 데이터 정합성 확인
