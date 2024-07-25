@@ -2,7 +2,7 @@ package com.zeromh.kvdb.server.handoff.interfaces;
 
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import com.zeromh.kvdb.server.common.dto.HandoffDto;
-import com.zeromh.kvdb.server.handoff.application.HandoffService;
+import com.zeromh.kvdb.server.handoff.application.HandoffUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -15,17 +15,17 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class HandoffController {
 
-    private final HandoffService handoffService;
+    private final HandoffUseCase handoffUseCase;
 
     @PostMapping
     public Mono<Boolean> postLeaveData(@RequestBody HandoffDto handoffDto) {
         log.info("[Handoff] Keep data(key: {}) of {}", handoffDto.getDataObject().getKey(), handoffDto.getServerName());
-        return handoffService.keepData(handoffDto.getServerName(), handoffDto.getDataObject());
+        return handoffUseCase.keepData(handoffDto.getServerName(), handoffDto.getDataObject());
     }
 
     @GetMapping
     public Flux<DataObject> getAllLeftData(@RequestParam String serverName) {
         log.info("[Handoff] Send all left data of {}", serverName);
-        return handoffService.getAllLeftData(serverName);
+        return handoffUseCase.getAllLeftData(serverName);
     }
 }

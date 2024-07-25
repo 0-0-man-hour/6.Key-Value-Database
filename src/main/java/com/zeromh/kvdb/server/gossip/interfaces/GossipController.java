@@ -1,7 +1,8 @@
 package com.zeromh.kvdb.server.gossip.interfaces;
 
 import com.zeromh.kvdb.server.common.domain.Membership;
-import com.zeromh.kvdb.server.gossip.application.GossipService;
+import com.zeromh.kvdb.server.gossip.application.GossipUseCase;
+import com.zeromh.kvdb.server.gossip.application.impl.GossipService;
 import com.zeromh.kvdb.server.gossip.dto.GossipUpdateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,16 +16,16 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class GossipController {
 
-    private final GossipService gossipService;
+    private final GossipUseCase gossipUseCase;
 
     @PostMapping
     public Mono<Membership> updateServerMembership(@RequestBody GossipUpdateDto gossipUpdateDto) {
-        return gossipService.updateHeartbeat(gossipUpdateDto);
+        return gossipUseCase.updateHeartbeat(gossipUpdateDto);
     }
 
     @GetMapping
     public Flux<Membership> getServerMembershipList() {
-        return gossipService.getServerMembershipList();
+        return gossipUseCase.getServerMembershipList();
     }
 
     @GetMapping("/health")
@@ -35,6 +36,6 @@ public class GossipController {
     @GetMapping("/check")
     public Mono<Boolean> checkHealthServer(@RequestParam String serverName) {
         log.info("[Gossip] {} request to check server status", serverName);
-        return Mono.just(gossipService.checkServerHealth(serverName));
+        return Mono.just(gossipUseCase.checkServerHealth(serverName));
     }
 }

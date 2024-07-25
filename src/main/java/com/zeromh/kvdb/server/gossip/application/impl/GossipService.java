@@ -1,18 +1,20 @@
-package com.zeromh.kvdb.server.gossip.application;
+package com.zeromh.kvdb.server.gossip.application.impl;
 
 import com.influxdb.client.write.Point;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.kvdb.server.common.ServerManager;
-import com.zeromh.kvdb.server.common.domain.Status;
 import com.zeromh.kvdb.server.common.domain.Membership;
+import com.zeromh.kvdb.server.common.domain.Status;
+import com.zeromh.kvdb.server.common.util.DateUtil;
+import com.zeromh.kvdb.server.gossip.application.GossipUseCase;
 import com.zeromh.kvdb.server.common.infrastructure.monitoring.InfluxDBRepository;
 import com.zeromh.kvdb.server.gossip.dto.GossipUpdateDto;
 import com.zeromh.kvdb.server.gossip.infrastructure.network.GossipNetworkPort;
 import com.zeromh.kvdb.server.common.util.DateUtil;
 import com.zeromh.kvdb.server.handoff.infrastructure.network.HandoffNetworkPort;
 import com.zeromh.kvdb.server.key.application.KeyUseCase;
-import com.zeromh.kvdb.server.merkle.application.MerkleService;
+import com.zeromh.kvdb.server.merkle.application.MerkleUseCase;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GossipService {
+public class GossipService implements GossipUseCase {
 
     private final ServerManager serverManager;
     private final GossipNetworkPort gossipNetworkPort;
     private final HandoffNetworkPort handoffNetworkPort;
     private final KeyUseCase keyUseCase;
-    private final MerkleService merkleService;
+    private final MerkleUseCase merkleUseCase;
     private final InfluxDBRepository influxDBRepository;
 
     @Getter
@@ -57,15 +59,7 @@ public class GossipService {
                 .build()));
     }
 
-    private Mono<List<Boolean>> checkMyServerInFailure(Collection<HashServer> servers) {
-        return Flux.fromIterable(servers)
-                .filter(server -> !server.equals(serverManager.getMyServer()))
-                .flatMap(server -> gossipNetworkPort.checkMyServerHealth(serverManager.getMyServer(), server))
-                .filter(aBoolean -> !aBoolean)
-                .collectList();
-
-    }
-
+    @Override
     public Mono<Boolean> updateMyHeartbeat() {
         Membership membership = membershipMap.get(serverManager.getMyServer().getName());
         membership.increaseHeartbeat();
@@ -74,6 +68,7 @@ public class GossipService {
         return Mono.just(true);
     }
 
+    @Override
     public Mono<Membership> updateHeartbeat(GossipUpdateDto gossipUpdateDto) {
         Membership requestServerMembership = membershipMap.get(gossipUpdateDto.getRequestServer()).copyMembership();
 
@@ -98,6 +93,7 @@ public class GossipService {
         return true;
     }
 
+    @Override
     public Flux<String> propagateStatus() {
         Random random = new Random();
         String myServerName = serverManager.getMyServer().getName();
@@ -125,10 +121,10 @@ public class GossipService {
                 .flatMap(server -> handoffNetworkPort.requestGetLeftData(server, serverManager.getMyServer()))
                 .flatMap(dataObject -> keyUseCase.saveData(HashKey.builder().key(dataObject.getKey()).build(), dataObject))
                 .thenMany(Flux.fromIterable(servers))
-                .flatMap(merkleService::checkTobeSameMerkle);
+                .flatMap(merkleUseCase::checkTobeSameMerkle);
     }
 
-
+    @Override
     public Flux<Membership> findRecoveredServer() {
         return Flux.fromIterable(serverManager.getServerMap().keySet())
                 .mapNotNull(serverName -> membershipMap.get(serverName))
@@ -139,7 +135,7 @@ public class GossipService {
                 .doOnNext(membership -> log.info("[Gossip] Recovered temporary failure of {}, failure time: {}", membership.getServerName(), DateUtil.getDateTimeString(membership.getTimeStamp())));
     }
 
-
+    @Override
     public Flux<Membership> findTemporaryFailureServer() {
         return Flux.fromIterable(serverManager.getServerMap().keySet())
                 .mapNotNull(serverName -> membershipMap.get(serverName))
@@ -148,6 +144,7 @@ public class GossipService {
                 .map(membership -> membership.updateStatus(Status.temporary));
     }
 
+    @Override
     public Flux<Membership> findPermanentFailureServer() {
         return Flux.fromIterable(serverManager.getServerMap().keySet())
                 .mapNotNull(serverName -> membershipMap.get(serverName))
@@ -162,10 +159,12 @@ public class GossipService {
         membershipMap.remove(membership.getServerName());
     }
 
+    @Override
     public Flux<Membership> getServerMembershipList() {
         return Flux.fromIterable(membershipMap.values());
     }
 
+    @Override
     public boolean checkServerHealth(String serverName) {
         return membershipMap.get(serverName).getStatus().isAlive();
     }

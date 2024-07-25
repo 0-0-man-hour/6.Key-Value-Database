@@ -1,6 +1,6 @@
 package com.zeromh.kvdb.server.merkle.interfaces;
 
-import com.zeromh.kvdb.server.merkle.application.MerkleService;
+import com.zeromh.kvdb.server.merkle.application.MerkleUseCase;
 import com.zeromh.kvdb.server.merkle.domain.dto.MerkleRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,14 +14,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class MerkleController {
 
-    private final MerkleService merkleService;
+    private final MerkleUseCase merkleUseCase;
 
     @GetMapping
     public Mono<Long> getMerkleBucketHashValue(@ModelAttribute MerkleRequestDto merkleRequestDto) {
-        return merkleService.getHashValue(merkleRequestDto);
+        return merkleUseCase.getHashValue(merkleRequestDto);
     }
 
     @PostMapping public Flux<String> postMerkleBucketHashValue(@RequestBody MerkleRequestDto merkleRequestDto) {
-        return merkleService.compareMerkleAndFindDifferentKeys(merkleRequestDto);
+        return merkleUseCase.compareMerkleAndFindDifferentKeys(merkleRequestDto);
     }
 }
