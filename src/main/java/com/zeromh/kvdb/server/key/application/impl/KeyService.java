@@ -9,11 +9,11 @@ import com.zeromh.kvdb.server.common.domain.DataObject;
 import com.zeromh.kvdb.server.common.domain.VectorClock;
 import com.zeromh.kvdb.server.common.dto.MerkleHashDto;
 import com.zeromh.kvdb.server.config.QuorumProperty;
-import com.zeromh.kvdb.server.handoff.application.HandoffService;
+import com.zeromh.kvdb.server.handoff.application.HandoffUseCase;
 import com.zeromh.kvdb.server.key.application.KeyUseCase;
 import com.zeromh.kvdb.server.key.infrastructure.network.KeyNetworkPort;
 import com.zeromh.kvdb.server.key.infrastructure.store.KeyStorePort;
-import com.zeromh.kvdb.server.merkle.application.MerkleService;
+import com.zeromh.kvdb.server.merkle.application.MerkleUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,8 @@ public class KeyService implements KeyUseCase {
     private final HashServicePort hashServicePort;
     private final QuorumProperty quorumProperty;
 
-    private final HandoffService handoffService;
-    private final MerkleService merkleService;
+    private final HandoffUseCase handoffUseCase;
+    private final MerkleUseCase merkleUseCase;
 
     private final KeyNetworkPort keyNetworkPort;
     private final KeyStorePort keyStorePort;
@@ -151,7 +151,7 @@ public class KeyService implements KeyUseCase {
     private Mono<DataObject> saveDataToServers(HashServerDto serverDto, HashKey key, DataObject dataObject) {
         HashServer server = serverDto.getServer();
         if (serverDto.getFailureServer() != null) {
-            return handoffService.leaveData(server.getName(), serverDto.getFailureServer().getName(), dataObject)
+            return handoffUseCase.leaveData(server.getName(), serverDto.getFailureServer().getName(), dataObject)
                     .thenReturn(dataObject);
         }
 
@@ -177,7 +177,7 @@ public class KeyService implements KeyUseCase {
     @Override
     public Mono<DataObject> saveData(HashKey key, DataObject request) {
         return keyStorePort.saveValue(key, request)
-                .flatMap(merkleService::updateMerkle)
+                .flatMap(merkleUseCase::updateMerkle)
                 .thenReturn(request);
     }
 }

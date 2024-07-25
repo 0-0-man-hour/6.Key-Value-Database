@@ -1,8 +1,8 @@
 package com.zeromh.kvdb.server.gossip.interfaces;
 
 import com.zeromh.kvdb.server.common.ServerManager;
-import com.zeromh.kvdb.server.gossip.application.GossipService;
-import com.zeromh.kvdb.server.node.application.impl.NodeService;
+import com.zeromh.kvdb.server.gossip.application.GossipUseCase;
+import com.zeromh.kvdb.server.node.application.NodeUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -10,20 +10,20 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class GossipScheduler {
-    private final GossipService gossipService;
+    private final GossipUseCase gossipUseCase;
     private final ServerManager serverManager;
-    private final NodeService nodeService;
+    private final NodeUseCase nodeUseCase;
 
     @Scheduled(fixedRate = 1000*5, initialDelay = 1000*5)
     public void updateHeartbeat() {
-        gossipService.updateMyHeartbeat()
-                .thenMany(gossipService.findRecoveredServer())
-                .flatMap(nodeService::updateServerStatus)
-                .thenMany(gossipService.findTemporaryFailureServer())
-                .flatMap(nodeService::updateServerStatus)
-                .thenMany(gossipService.propagateStatus())
-                .thenMany(gossipService.findPermanentFailureServer())
-                .flatMap(nodeService::deleteServer)
+        gossipUseCase.updateMyHeartbeat()
+                .thenMany(gossipUseCase.findRecoveredServer())
+                .flatMap(nodeUseCase::updateServerStatus)
+                .thenMany(gossipUseCase.findTemporaryFailureServer())
+                .flatMap(nodeUseCase::updateServerStatus)
+                .thenMany(gossipUseCase.propagateStatus())
+                .thenMany(gossipUseCase.findPermanentFailureServer())
+                .flatMap(nodeUseCase::deleteServer)
                 .map(hashServer -> serverManager.deleteServer(hashServer.getName()))
                 .subscribe();
     }
