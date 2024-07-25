@@ -1,0 +1,4729 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 39,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "GET": {
+                            "color": "green",
+                            "index": 0
+                          },
+                          "PUT": {
+                            "color": "blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 179
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 1
+          },
+          "id": 34,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"key\" and r.server == \"myserver1\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S1]Key",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "READ": {
+                            "color": "dark-green",
+                            "index": 0
+                          },
+                          "WRITE": {
+                            "color": "dark-blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 218
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 6,
+            "y": 1
+          },
+          "id": 45,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"quorum\" and r.server == \"myserver1\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S1]Quorum",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "GET": {
+                            "color": "green",
+                            "index": 0
+                          },
+                          "PUT": {
+                            "color": "blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 171
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 12,
+            "y": 1
+          },
+          "id": 36,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"key\" and r.server == \"myserver4\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S4]Key",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "READ": {
+                            "color": "dark-green",
+                            "index": 0
+                          },
+                          "WRITE": {
+                            "color": "dark-blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 218
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 18,
+            "y": 1
+          },
+          "id": 48,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"quorum\" and r.server == \"myserver4\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S4]Quorum",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "GET": {
+                            "color": "green",
+                            "index": 0
+                          },
+                          "PUT": {
+                            "color": "blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 171
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 7
+          },
+          "id": 35,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"key\" and r.server == \"myserver2\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S2]Key",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "READ": {
+                            "color": "dark-green",
+                            "index": 0
+                          },
+                          "WRITE": {
+                            "color": "dark-blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 218
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 6,
+            "y": 7
+          },
+          "id": 46,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"quorum\" and r.server == \"myserver2\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S2]Quorum",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "GET": {
+                            "color": "green",
+                            "index": 0
+                          },
+                          "PUT": {
+                            "color": "blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 171
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 12,
+            "y": 7
+          },
+          "id": 37,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"key\" and r.server == \"myserver5\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S5]Key",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "READ": {
+                            "color": "dark-green",
+                            "index": 0
+                          },
+                          "WRITE": {
+                            "color": "dark-blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 218
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 18,
+            "y": 7
+          },
+          "id": 49,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"quorum\" and r.server == \"myserver5\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S5]Quorum",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "GET": {
+                            "color": "green",
+                            "index": 0
+                          },
+                          "PUT": {
+                            "color": "blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 171
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 13
+          },
+          "id": 33,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"key\" and r.server == \"myserver3\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S3]Key",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "READ": {
+                            "color": "dark-green",
+                            "index": 0
+                          },
+                          "WRITE": {
+                            "color": "dark-blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 218
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 6,
+            "y": 13
+          },
+          "id": 47,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"quorum\" and r.server == \"myserver3\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S3]Quorum",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "GET": {
+                            "color": "green",
+                            "index": 0
+                          },
+                          "PUT": {
+                            "color": "blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 171
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 12,
+            "y": 13
+          },
+          "id": 38,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"key\" and r.server == \"myserver6\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S6]Key",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "method"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "READ": {
+                            "color": "dark-green",
+                            "index": 0
+                          },
+                          "WRITE": {
+                            "color": "dark-blue",
+                            "index": 1
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 218
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "key"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 95
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 18,
+            "y": 13
+          },
+          "id": 50,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"quorum\" and r.server == \"myserver6\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"method\", \"key\", \"value\"])\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S6]Quorum",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 0,
+                  "key": 2,
+                  "method": 1,
+                  "value": 3
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": ""
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Request",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 10,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 121
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "myserver1"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 113
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "myserver2"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 125
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "myserver3"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 128
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "myserver4"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 122
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "myserver5"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 124
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 15,
+            "x": 0,
+            "y": 2
+          },
+          "id": 11,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\")\n  |> group(columns: [\"partition\", \"server\"])  // partition과 server로 그룹화\n  |> last()  // 각 그룹에서 가장 최신의 값을 선택\n  |> group()\n  |> keep(columns: [\"partition\", \"_value\", \"server\"])  // 필요한 열만 유지\n  |> pivot(rowKey: [\"partition\"], columnKey: [\"server\"], valueColumn: \"_value\")  // 데이터를 피벗하여 행과 열을 변환\n\n",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": true,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\")\n  |> group(columns: [\"partition\", \"server\"])  // partition과 server로 그룹화\n  |> last()  // 각 그룹에서 가장 최신의 값을 선택\n  |> group()\n  |> pivot(rowKey: [\"partition\"], columnKey: [\"server\"], valueColumn: \"_value\")  // 데이터를 피벗하여 행과 열을 변환\n  |> keep(columns: [\"partition\", \"myserver1\", \"myserver2\", \"myserver3\", \"myserver4\", \"myserver5\", \"myserver6\"])  // 필요한 열만 유지\n  |> yield(name: \"result\")",
+              "refId": "B"
+            }
+          ],
+          "title": "MerkleTree-Hash",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "myserver1": 1,
+                  "myserver2": 2,
+                  "myserver3": 3,
+                  "myserver4": 4,
+                  "myserver5": 5,
+                  "myserver6": 6,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 71
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 0,
+            "y": 12
+          },
+          "id": 18,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"handoff\" and r.server == \"myserver1\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group(columns: [\"from\", \"key\"])\n  |> sort(columns: [\"_time\"], desc: true)\n  |> unique(column: \"key\")\n  |> group(columns: [\"from\"])\n  |> keep(columns: [\"_time\", \"from\", \"key\", \"command\"])\n  |> filter(fn: (r) => r.command == \"KEEP\")\n  |> count(column: \"key\")\n  |> group()",
+              "refId": "B"
+            }
+          ],
+          "title": "[S1]Handoff",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": "Number of Keys"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 71
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 5,
+            "y": 12
+          },
+          "id": 29,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"handoff\" and r.server == \"myserver2\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group(columns: [\"from\", \"key\"])\n  |> sort(columns: [\"_time\"], desc: true)\n  |> unique(column: \"key\")\n  |> group(columns: [\"from\"])\n  |> keep(columns: [\"_time\", \"from\", \"key\", \"command\"])\n  |> filter(fn: (r) => r.command == \"KEEP\")\n  |> count(column: \"key\")\n  |> group()",
+              "refId": "B"
+            }
+          ],
+          "title": "[S2]Handoff",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": "Number of Keys"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 71
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 10,
+            "y": 12
+          },
+          "id": 28,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"handoff\" and r.server == \"myserver3\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group(columns: [\"from\", \"key\"])\n  |> sort(columns: [\"_time\"], desc: true)\n  |> unique(column: \"key\")\n  |> group(columns: [\"from\"])\n  |> keep(columns: [\"_time\", \"from\", \"key\", \"command\"])\n  |> filter(fn: (r) => r.command == \"KEEP\")\n  |> count(column: \"key\")\n  |> group()",
+              "refId": "B"
+            }
+          ],
+          "title": "[S3]Handoff",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": "Number of Keys"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 71
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 0,
+            "y": 18
+          },
+          "id": 27,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"handoff\" and r.server == \"myserver4\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group(columns: [\"from\", \"key\"])\n  |> sort(columns: [\"_time\"], desc: true)\n  |> unique(column: \"key\")\n  |> group(columns: [\"from\"])\n  |> keep(columns: [\"_time\", \"from\", \"key\", \"command\"])\n  |> filter(fn: (r) => r.command == \"KEEP\")\n  |> count(column: \"key\")\n  |> group()",
+              "refId": "B"
+            }
+          ],
+          "title": "[S4]Handoff",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": "Number of Keys"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 71
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 5,
+            "y": 18
+          },
+          "id": 30,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"handoff\" and r.server == \"myserver5\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group(columns: [\"from\", \"key\"])\n  |> sort(columns: [\"_time\"], desc: true)\n  |> unique(column: \"key\")\n  |> group(columns: [\"from\"])\n  |> keep(columns: [\"_time\", \"from\", \"key\", \"command\"])\n  |> filter(fn: (r) => r.command == \"KEEP\")\n  |> count(column: \"key\")\n  |> group()",
+              "refId": "B"
+            }
+          ],
+          "title": "[S5]Handoff",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": "Number of Keys"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 71
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 10,
+            "y": 18
+          },
+          "id": 31,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"handoff\" and r.server == \"myserver6\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group(columns: [\"from\", \"key\"])\n  |> sort(columns: [\"_time\"], desc: true)\n  |> unique(column: \"key\")\n  |> group(columns: [\"from\"])\n  |> keep(columns: [\"_time\", \"from\", \"key\", \"command\"])\n  |> filter(fn: (r) => r.command == \"KEEP\")\n  |> count(column: \"key\")\n  |> group()",
+              "refId": "B"
+            }
+          ],
+          "title": "[S6]Handoff",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash",
+                  "from": "From",
+                  "key": "Number of Keys"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "status"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "alive": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "ALIVE"
+                          },
+                          "permarnent": {
+                            "color": "red",
+                            "index": 2,
+                            "text": "PERMARNET"
+                          },
+                          "temporary": {
+                            "color": "orange",
+                            "index": 1,
+                            "text": "TEMPORARY"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "server"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "myserver1": {
+                            "color": "blue",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 0,
+            "y": 24
+          },
+          "id": 12,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "heartbeat_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver1\" and r._field == \"heartbeat\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"heartbeat\"})\n\nstatus_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver1\" and r._field == \"status\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"status\"})\n\njoin(\n  tables: {heartbeat: heartbeat_data, status: status_data},\n  on: [\"server\", \"_time\"]\n)\n|> keep(columns: [\"server\", \"heartbeat\", \"status\", \"_time\"])\n|>group()\n",
+              "refId": "A"
+            }
+          ],
+          "title": "[S1]Gossip",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "status"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "alive": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "ALIVE"
+                          },
+                          "permarnent": {
+                            "color": "red",
+                            "index": 2,
+                            "text": "PERMARNET"
+                          },
+                          "temporary": {
+                            "color": "orange",
+                            "index": 1,
+                            "text": "TEMPORARY"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "server"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "myserver2": {
+                            "color": "blue",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 5,
+            "y": 24
+          },
+          "id": 20,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "heartbeat_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver2\" and r._field == \"heartbeat\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"heartbeat\"})\n\nstatus_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver2\" and r._field == \"status\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"status\"})\n\njoin(\n  tables: {heartbeat: heartbeat_data, status: status_data},\n  on: [\"server\", \"_time\"]\n)\n|> keep(columns: [\"server\", \"heartbeat\", \"status\", \"_time\"])\n|>group()\n",
+              "refId": "A"
+            }
+          ],
+          "title": "[S2]Gossip",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "status"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "alive": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "ALIVE"
+                          },
+                          "permarnent": {
+                            "color": "red",
+                            "index": 2,
+                            "text": "PERMARNET"
+                          },
+                          "temporary": {
+                            "color": "orange",
+                            "index": 1,
+                            "text": "TEMPORARY"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "server"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "myserver3": {
+                            "color": "blue",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 196
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 10,
+            "y": 24
+          },
+          "id": 21,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "heartbeat_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver3\" and r._field == \"heartbeat\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"heartbeat\"})\n\nstatus_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver3\" and r._field == \"status\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"status\"})\n\njoin(\n  tables: {heartbeat: heartbeat_data, status: status_data},\n  on: [\"server\", \"_time\"]\n)\n|> keep(columns: [\"server\", \"heartbeat\", \"status\", \"_time\"])\n|>group()\n",
+              "refId": "A"
+            }
+          ],
+          "title": "[S3]Gossip",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "status"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "alive": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "ALIVE"
+                          },
+                          "permarnent": {
+                            "color": "red",
+                            "index": 2,
+                            "text": "PERMARNET"
+                          },
+                          "temporary": {
+                            "color": "orange",
+                            "index": 1,
+                            "text": "TEMPORARY"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "server"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "myserver4": {
+                            "color": "blue",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 0,
+            "y": 32
+          },
+          "id": 22,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "heartbeat_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver4\" and r._field == \"heartbeat\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"heartbeat\"})\n\nstatus_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver4\" and r._field == \"status\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"status\"})\n\njoin(\n  tables: {heartbeat: heartbeat_data, status: status_data},\n  on: [\"server\", \"_time\"]\n)\n|> keep(columns: [\"server\", \"heartbeat\", \"status\", \"_time\"])\n|>group()\n",
+              "refId": "A"
+            }
+          ],
+          "title": "[S4]Gossip",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "status"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "alive": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "ALIVE"
+                          },
+                          "permarnent": {
+                            "color": "red",
+                            "index": 2,
+                            "text": "PERMARNET"
+                          },
+                          "temporary": {
+                            "color": "orange",
+                            "index": 1,
+                            "text": "TEMPORARY"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "server"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "myserver5": {
+                            "color": "blue",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 5,
+            "y": 32
+          },
+          "id": 23,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "heartbeat_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver5\" and r._field == \"heartbeat\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"heartbeat\"})\n\nstatus_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver5\" and r._field == \"status\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"status\"})\n\njoin(\n  tables: {heartbeat: heartbeat_data, status: status_data},\n  on: [\"server\", \"_time\"]\n)\n|> keep(columns: [\"server\", \"heartbeat\", \"status\", \"_time\"])\n|>group()\n",
+              "refId": "A"
+            }
+          ],
+          "title": "[S5]Gossip",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "status"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "alive": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "ALIVE"
+                          },
+                          "permarnent": {
+                            "color": "red",
+                            "index": 2,
+                            "text": "PERMARNET"
+                          },
+                          "temporary": {
+                            "color": "orange",
+                            "index": 1,
+                            "text": "TEMPORARY"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "server"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "myserver6": {
+                            "color": "blue",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 10,
+            "y": 32
+          },
+          "id": 24,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "heartbeat_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver6\" and r._field == \"heartbeat\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"heartbeat\"})\n\nstatus_data = from(bucket: \"kvdb\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"gossip\" and r.from == \"myserver6\" and r._field == \"status\")\n  |> group(columns: [\"server\"])\n  |> last()\n  |> keep(columns: [\"_time\", \"server\", \"_value\"])\n  |> rename(columns: {_value: \"status\"})\n\njoin(\n  tables: {heartbeat: heartbeat_data, status: status_data},\n  on: [\"server\", \"_time\"]\n)\n|> keep(columns: [\"server\", \"heartbeat\", \"status\", \"_time\"])\n|>group()\n",
+              "refId": "A"
+            }
+          ],
+          "title": "[S6]Gossip",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_time": 3,
+                  "heartbeat": 1,
+                  "server": 0,
+                  "status": 2
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Status",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 9,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 129
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 3,
+            "y": 3
+          },
+          "id": 4,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "  from(bucket: \"kvdb\")\n  |> range(start: -24h)  // 데이터의 시간 범위를 설정 (예: 지난 1시간)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\" and r[\"server\"] == \"myserver1\")\n  |> group(columns: [\"partition\"])\n  |> last()\n  |> group()\n  |> keep(columns: [ \"_value\", \"partition\", \"_time\"])  // 필요한 열만 유지\n\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S1]Merkle",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_value": 1,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 129
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 9,
+            "y": 3
+          },
+          "id": 3,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "  from(bucket: \"kvdb\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\" and r[\"server\"] == \"myserver2\")\n  |> group(columns: [\"partition\"])\n  |> last()\n  |> group()\n  |> keep(columns: [ \"_value\", \"partition\", \"_time\"])  // 필요한 열만 유지\n\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S2]Merkle",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_value": 1,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 129
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 15,
+            "y": 3
+          },
+          "id": 1,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "  from(bucket: \"kvdb\")\n  |> range(start: -24h)  // 데이터의 시간 범위를 설정 (예: 지난 1시간)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\" and r[\"server\"] == \"myserver3\")\n  |> group(columns: [\"partition\"])\n  |> last()\n  |> group()\n  |> keep(columns: [ \"_value\", \"partition\", \"_time\"])  // 필요한 열만 유지\n\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S3]Merkle",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_value": 1,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 129
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 3,
+            "y": 9
+          },
+          "id": 7,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "  from(bucket: \"kvdb\")\n  |> range(start: -24h)  // 데이터의 시간 범위를 설정 (예: 지난 1시간)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\" and r[\"server\"] == \"myserver4\")\n  |> group(columns: [\"partition\"])\n  |> last()\n  |> group()\n  |> keep(columns: [ \"_value\", \"partition\", \"_time\"])  // 필요한 열만 유지\n\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S4]Merkle",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_value": 1,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 129
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 9,
+            "y": 9
+          },
+          "id": 5,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "  from(bucket: \"kvdb\")\n  |> range(start: -24h)  // 데이터의 시간 범위를 설정 (예: 지난 1시간)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\" and r[\"server\"] == \"myserver5\")\n  |> group(columns: [\"partition\"])\n  |> last()\n  |> group()\n  |> keep(columns: [ \"_value\", \"partition\", \"_time\"])  // 필요한 열만 유지\n\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S5]Merkle",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_value": 1,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "edsiyrrnsq7eof"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "left",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "partition"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 147
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hash"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 129
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 15,
+            "y": 9
+          },
+          "id": 6,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "edsiyrrnsq7eof"
+              },
+              "hide": false,
+              "query": "  from(bucket: \"kvdb\")\n  |> range(start: -24h)  // 데이터의 시간 범위를 설정 (예: 지난 1시간)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"merkle\" and r[\"server\"] == \"myserver6\")\n  |> group(columns: [\"partition\"])\n  |> last()\n  |> group()\n  |> keep(columns: [ \"_value\", \"partition\", \"_time\"])  // 필요한 열만 유지\n\n",
+              "refId": "B"
+            }
+          ],
+          "title": "[S6]Merkle",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "_value": 1,
+                  "partition": 0
+                },
+                "renameByName": {
+                  "_time": "time",
+                  "_value": "hash"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "number",
+                    "targetField": "partition"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "partition"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "MerkleDetail",
+      "type": "row"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-2m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Key-Value Database",
+  "uid": "fdsjkriuwqzuod",
+  "version": 17,
+  "weekStart": ""
+}

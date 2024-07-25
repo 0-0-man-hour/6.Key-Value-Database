@@ -1,5 +1,6 @@
 package com.zeromh.kvdb.server.merkle.application.impl;
 
+import com.influxdb.client.write.Point;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
