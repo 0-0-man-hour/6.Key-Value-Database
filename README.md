@@ -107,14 +107,32 @@ $ docker-compose -f docker-compose-local.yml up
 
 
 ### 결과
-Grafana와 InfluxDB를 통해 모니터링을 구축하였으며, 이를 통해서 결과를 확인하였다.
+Grafana와 InfluxDB를 통해 각 기능에 대한 모니터링을 구축하였으며, 이를 통해서 결과를 확인하였다.
+#### Test Set
+- 클러스터는 6개의 서버로 구성되었으며 각 서버는 4개의 가상노드를 생성하여 해시링에 배치한다.
+- 정족수 합의 프로토콜에서 사본의 개수(N) 3, 쓰기 연산 정족수(W) 2, 읽기 연산 정족수(R) 2로 설정하여 최종 일관성을 지원한다.
+- 
 
 #### 다중화 지원
+![key-put-high](https://github.com/user-attachments/assets/4019d091-9961-4e5a-997c-6a9d78456a42)  
+PUT 요청 시 3개의 서버에서 데이터가 저장되는 모습을 확인할 수 있다.
 
 #### 일관성 지원
+![quorum-put-high](https://github.com/user-attachments/assets/4369258c-07ad-4f57-bbbd-e8b32486a91b)  
+(N=3, W=2)이므로 PUT 요청이 3개의 서버로 전달되는 것을 확인할 수 있고, 요청 처리를 담당하는 서버는 2개의 요청에 대한 응답을 받아 처리하는 모습을 확인할 수 있다.
+
+![quorum-get-high](https://github.com/user-attachments/assets/a0e68f2b-bd67-45f7-9e3a-ef60f1785d7a)
+(N=3, R=2)이므로 GET 요청이 3개의 서버로 전달되는 것을 확인할 수 있고, 요청 처리를 담당하는 서버는 2개의 요청에 대한 응답을 받아 처리하는 모습을 확인할 수 있다.
 
 #### 가십 프로토콜을 통한 서버 상태 확인 지원
+![gossip-middle](https://github.com/user-attachments/assets/42855ba1-9d71-4f31-85a1-c3e3bc02bb7c)  
+Membership이 지속적인 업데이트가 되는 것을 확인할 수 있으며, 일시 장애 서버를 제외한 다른 서버들의 상태에 일시 장애 상태가 표시된다.
 
 #### 일시 장애 시 임시 위탁 기능을 통한 데이터 관리
+![handoff-temporary-high](https://github.com/user-attachments/assets/191da1f2-36fb-49a4-a35d-afe3ff4cb270)
+
+
+![handoff-failover-high](https://github.com/user-attachments/assets/d3f6c982-3c06-4d2a-b3d9-c8b1cced18c3)
+
 
 #### 머클 트리를 이용한 데이터 정합성 확인
