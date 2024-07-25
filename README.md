@@ -74,8 +74,6 @@ PUT, GET에 대한 간단한 연산과 데이터 다중화, 일관성, 상호 �
 ```bash.
 $ docker pull mongo
 $ docker pull nginx
-$ docker pull grafana
-$ docker pull influxdb/influxdb
 ```
 
 #### 서버 구동 방법
@@ -105,6 +103,17 @@ $ docker-compose -f docker-compose-local.yml up
 }
 ```
 
+#### 모니터링 대시보드 실행 방법
+- brach를 monitoring으로 변경한다. 
+- 추가로 docker 레포지토리로부터 grafana와 influxdb 이미지를 가져온다.  
+```bash.
+$ docker pull grafana
+$ docker pull influxdb/influxdb
+```
+- 두 컨테이너를 실행 및 연결하고, Grafana_Key-Value Database-dashboard.json 파일을 import하여 Dashboard를 추가한다.
+<img src = "https://github.com/user-attachments/assets/a002fe2f-d1c6-4615-bd5e-800e57652318" width="60%" height="60%">
+<img src = "https://github.com/user-attachments/assets/8d12e198-0ad1-43be-83d6-d9e722672852" width="60%" height="60%">
+<img src = "https://github.com/user-attachments/assets/59666815-1ff3-45d7-bbab-16aa99afca27" width="60%" height="60%">
 
 ### 결과
 Grafana와 InfluxDB를 통해 각 기능에 대한 모니터링을 구축하였으며, 이를 통해서 결과를 확인하였다.
