@@ -1,9 +1,11 @@
 package com.zeromh.kvdb.server.handoff.application;
 
+import com.influxdb.client.write.Point;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import com.zeromh.kvdb.server.common.dto.HandoffDto;
+import com.zeromh.kvdb.server.common.infrastructure.monitoring.InfluxDBRepository;
 import com.zeromh.kvdb.server.handoff.infrastructure.network.HandoffNetworkPort;
 import com.zeromh.kvdb.server.handoff.infrastructure.store.HandoffStorePort;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +22,16 @@ public class HandoffService {
     private final HandoffStorePort handoffStorePort;
     private final HandoffNetworkPort handoffNetworkPort;
     private final ServerManager serverManager;
+    private final InfluxDBRepository influxDBRepository;
 
     public Mono<Boolean> keepData(String serverName, DataObject dataObject) {
         return handoffStorePort.saveValue(serverName, dataObject)
+                .flatMap(dataObject1 -> influxDBRepository.writePoint(Point.measurement("handoff")
+                        .addTag("server", serverManager.getMyServer().getName())
+                        .addTag("from", serverName)
+                        .addField("key", dataObject.getKey())
+                        .addField("command", "KEEP")
+                ))
                 .thenReturn(true);
     }
 
@@ -33,7 +42,13 @@ public class HandoffService {
     }
 
     public Flux<DataObject> getAllLeftData(String serverName) {
-        return handoffStorePort.getAllValueAndRemove(serverName);
+        return handoffStorePort.getAllValueAndRemove(serverName)
+                .flatMap(dataObject -> influxDBRepository.writePoint(Point.measurement("handoff")
+                        .addTag("server", serverManager.getMyServer().getName())
+                        .addTag("from", serverName)
+                        .addField("key", dataObject.getKey())
+                        .addField("command", "DELETE")
+                ).thenReturn(dataObject));
     }
 
 }

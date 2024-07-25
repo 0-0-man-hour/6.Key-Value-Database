@@ -33,7 +33,8 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation files('libs/consistenthash-0.0.4-SNAPSHOT-plain.jar')
+    implementation files('libs/consistenthash-0.0.5-SNAPSHOT-plain.jar')
+    implementation 'com.influxdb:influxdb-client-java:6.4.0'
 }
 
 tasks.named('test') {

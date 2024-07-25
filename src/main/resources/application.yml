@@ -4,12 +4,12 @@ server:
   port: ${SERVER_PORT:8081}
   nums-of-node: 4
   server-list:
-    - myserver1:myserver1:8081:4
-    - myserver2:myserver2:8082:4
-    - myserver3:myserver3:8083:4
-    - myserver4:myserver4:8084:4
-    - myserver5:myserver5:8085:4
-    - myserver6:myserver6:8086:4
+    - myserver1:myserver1:8101:4
+    - myserver2:myserver2:8102:4
+    - myserver3:myserver3:8103:4
+    - myserver4:myserver4:8104:4
+    - myserver5:myserver5:8105:4
+    - myserver6:myserver6:8106:4
 
 quorum:
   number-of-replica: 3
@@ -31,3 +31,11 @@ spring:
   data:
     mongodb:
       database: ${SERVER_NAME:myserver1}
+
+
+influxdb:
+  run: false
+  url: http://influxdb:8086
+  token: FtiI_iKAHZgL3uVSe8Fn8FWO09d51IUHsE-pBBwEaWsrolqXL8NZITP4NpfJGb4PpwpSsU_X6EwqgEC2waHI3A==
+  bucket: kvdb
+  org: 0manhour

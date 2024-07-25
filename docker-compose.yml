@@ -10,14 +10,14 @@ services:
     image: myapp:latest
     container_name: myserver1
     ports:
-      - "8083:8083"
+      - "8101:8083"
     environment:
       - SPRING_APPLICATION_NAME=myserver1
       - SPRING_DATA_MONGODB_DATABASE=myserver1
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver1
       - SERVER_NAME=myserver1
       - SERVER_URL=myserver1
-      - SERVER_PORT=8081
+      - SERVER_PORT=8101
     depends_on:
       - mongodb
 
@@ -26,14 +26,14 @@ services:
     image: myapp:latest
     container_name: myserver2
     ports:
-      - "8084:8083"
+      - "8102:8083"
     environment:
       - SPRING_APPLICATION_NAME=myserver2
       - SPRING_DATA_MONGODB_DATABASE=myserver2
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver2
       - SERVER_NAME=myserver2
       - SERVER_URL=myserver2
-      - SERVER_PORT=8082
+      - SERVER_PORT=8102
     depends_on:
       - mongodb
 
@@ -42,14 +42,14 @@ services:
     image: myapp:latest
     container_name: myserver3
     ports:
-      - "8085:8083"
+      - "8103:8083"
     environment:
       - SPRING_APPLICATION_NAME=myserver3
       - SPRING_DATA_MONGODB_DATABASE=myserver3
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver3
       - SERVER_NAME=myserver3
       - SERVER_URL=myserver3
-      - SERVER_PORT=8083
+      - SERVER_PORT=8103
     depends_on:
       - mongodb
 
@@ -58,14 +58,14 @@ services:
     image: myapp:latest
     container_name: myserver4
     ports:
-      - "8086:8083"
+      - "8104:8083"
     environment:
       - SPRING_APPLICATION_NAME=myserver4
       - SPRING_DATA_MONGODB_DATABASE=myserver4
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver4
       - SERVER_NAME=myserver4
       - SERVER_URL=myserver4
-      - SERVER_PORT=8084
+      - SERVER_PORT=8104
     depends_on:
       - mongodb
 
@@ -73,14 +73,14 @@ services:
     image: myapp:latest
     container_name: myserver5
     ports:
-      - "8087:8083"
+      - "8105:8083"
     environment:
       - SPRING_APPLICATION_NAME=myserver5
       - SPRING_DATA_MONGODB_DATABASE=myserver5
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver5
       - SERVER_NAME=myserver5
       - SERVER_URL=myserver5
-      - SERVER_PORT=8085
+      - SERVER_PORT=8105
     depends_on:
       - mongodb
 
@@ -88,14 +88,14 @@ services:
     image: myapp:latest
     container_name: myserver6
     ports:
-      - "8088:8083"
+      - "8106:8083"
     environment:
       - SPRING_APPLICATION_NAME=myserver6
       - SPRING_DATA_MONGODB_DATABASE=myserver6
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/myserver6
       - SERVER_NAME=myserver6
       - SERVER_URL=myserver6
-      - SERVER_PORT=8086
+      - SERVER_PORT=8106
     depends_on:
       - mongodb
 
@@ -113,3 +113,34 @@ services:
       - myserver4
       - myserver5
       - myserver6
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - "4000:8086"
+    environment:
+      - INFLUXDB_DB=test
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+      - INFLUXDB_USER=user
+      - INFLUXDB_USER_PASSWORD=user
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - influxdb
+
+volumes:
+  influxdb-storage:
+  grafana-storage:

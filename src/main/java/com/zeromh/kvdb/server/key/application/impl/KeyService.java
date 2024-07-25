@@ -1,5 +1,6 @@
 package com.zeromh.kvdb.server.key.application.impl;
 
+import com.influxdb.client.write.Point;
 import com.zeromh.consistenthash.application.dto.HashServerDto;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
@@ -8,6 +9,7 @@ import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import com.zeromh.kvdb.server.common.domain.VectorClock;
 import com.zeromh.kvdb.server.common.dto.MerkleHashDto;
+import com.zeromh.kvdb.server.common.infrastructure.monitoring.InfluxDBRepository;
 import com.zeromh.kvdb.server.config.QuorumProperty;
 import com.zeromh.kvdb.server.handoff.application.HandoffService;
 import com.zeromh.kvdb.server.key.application.KeyUseCase;
@@ -39,6 +41,8 @@ public class KeyService implements KeyUseCase {
     private final KeyNetworkPort keyNetworkPort;
     private final KeyStorePort keyStorePort;
 
+    private final InfluxDBRepository influxDBRepository;
+
     @Override
     public Mono<DataObject> intermediateGetData(HashKey key) {
         List<HashServerDto> targetServers = hashServicePort.getAliveServers(key, quorumProperty.getNumberOfReplica());
@@ -48,7 +52,14 @@ public class KeyService implements KeyUseCase {
             return Flux.fromIterable(responsibleServers)
                     .flatMap(responsibleServer -> fetchDataFromServer(responsibleServer, key))
                     .take(quorumProperty.getRead())
-                    .doOnNext(tuple2 -> log.info("[Key] Ack of putting {} came from {} ", key.getKey() ,tuple2.getT2().getName()))
+                    .flatMap(tuple2 -> influxDBRepository.writePoint(Point.measurement("quorum")
+                                    .addTag("server", serverManager.getMyServer().getName())
+                                    .addTag("method", "READ")
+                                    .addField("key", tuple2.getT1().getKey())
+                                    .addField("from", tuple2.getT2().getName())
+                            ).thenReturn(tuple2)
+                    )
+                    .doOnNext(tuple2 -> log.info("[Key] Ack of getting {} came from {} ", key.getKey() ,tuple2.getT2().getName()))
                     .collectList()
                     .flatMap(tuple2 -> checkConflictAndSendLatestVersion(key, tuple2));
         }
@@ -77,7 +88,13 @@ public class KeyService implements KeyUseCase {
 
     @Override
     public Mono<DataObject> getData(HashKey key) {
-        return keyStorePort.getValue(key);
+        return keyStorePort.getValue(key)
+                .flatMap(dataObject -> influxDBRepository.writePoint(Point.measurement("key")
+                        .addTag("server", serverManager.getMyServer().getName())
+                        .addTag("method", "GET")
+                        .addField("key", dataObject.getKey())
+                        .addTag("value", String.valueOf(dataObject.getValue()))
+                ).thenReturn(dataObject));
     }
 
     private Mono<DataObject> checkConflictAndSendLatestVersion(HashKey key, List<Tuple2<DataObject, HashServer>> tupleData) {
@@ -122,6 +139,13 @@ public class KeyService implements KeyUseCase {
                     .flatMap(targetServer -> saveDataToServers(targetServer, key, dataObject).zipWith(Mono.just(targetServer.getServer())))
                     .take(quorumProperty.getWrite())
                     .doOnNext(tuple2 -> log.info("[Key] Ack of putting {} came from {} ", key.getKey() ,tuple2.getT2().getName()))
+                    .flatMap(tuple2 -> influxDBRepository.writePoint(Point.measurement("quorum")
+                                    .addTag("server", serverManager.getMyServer().getName())
+                                    .addTag("method", "WRITE")
+                                    .addField("key", tuple2.getT1().getKey())
+                                    .addField("from", tuple2.getT2().getName())
+                            ).thenReturn(tuple2)
+                    )
                     .then(Mono.just(true));
         }
 
@@ -177,6 +201,12 @@ public class KeyService implements KeyUseCase {
     @Override
     public Mono<DataObject> saveData(HashKey key, DataObject request) {
         return keyStorePort.saveValue(key, request)
+                .flatMap(dataObject -> influxDBRepository.writePoint(Point.measurement("key")
+                        .addTag("server", serverManager.getMyServer().getName())
+                        .addTag("method", "PUT")
+                        .addField("key", dataObject.getKey())
+                        .addTag("value", String.valueOf(dataObject.getValue()))
+                ).thenReturn(dataObject))
                 .flatMap(merkleService::updateMerkle)
                 .thenReturn(request);
     }

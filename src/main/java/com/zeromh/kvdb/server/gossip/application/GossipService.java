@@ -1,10 +1,12 @@
 package com.zeromh.kvdb.server.gossip.application;
 
+import com.influxdb.client.write.Point;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.Status;
 import com.zeromh.kvdb.server.common.domain.Membership;
+import com.zeromh.kvdb.server.common.infrastructure.monitoring.InfluxDBRepository;
 import com.zeromh.kvdb.server.gossip.dto.GossipUpdateDto;
 import com.zeromh.kvdb.server.gossip.infrastructure.network.GossipNetworkPort;
 import com.zeromh.kvdb.server.common.util.DateUtil;
@@ -33,6 +35,7 @@ public class GossipService {
     private final HandoffNetworkPort handoffNetworkPort;
     private final KeyUseCase keyUseCase;
     private final MerkleService merkleService;
+    private final InfluxDBRepository influxDBRepository;
 
     @Getter
     private Map<String, Membership> membershipMap;
@@ -52,17 +55,6 @@ public class GossipService {
                     .timeStamp(DateUtil.getTimeStamp())
                     .status(Status.alive)
                 .build()));
-
-//        Thread.sleep(1000*3);
-//        checkMyServerInFailure(servers)
-//                .filter(list -> !list.isEmpty())
-//                .flatMapMany(list -> Flux.fromIterable(servers)
-//                        .filter(server -> !server.equals(serverManager.getMyServer()))
-//                        .flatMap(server -> handoffNetworkPort.requestGetLeftData(server, serverManager.getMyServer()))
-//                        .flatMap(dataObject -> keyUseCase.saveData(HashKey.builder().key(dataObject.getKey()).build(), dataObject))
-//                        .thenMany(Flux.fromIterable(servers))
-//                        .flatMap(merkleService::checkTobeSameMerkle)
-//                ).subscribe();
     }
 
     private Mono<List<Boolean>> checkMyServerInFailure(Collection<HashServer> servers) {
@@ -108,10 +100,18 @@ public class GossipService {
 
     public Flux<String> propagateStatus() {
         Random random = new Random();
+        String myServerName = serverManager.getMyServer().getName();
+
         return Flux.fromIterable(serverManager.getServerMap().values())
-                .filter(server -> !server.equals(serverManager.getMyServer()))
-                .filter(server -> random.nextBoolean())
-                .flatMap(server -> gossipNetworkPort.propagateStatus(server, new GossipUpdateDto(serverManager.getMyServer().getName(), membershipMap.values().stream().toList())))
+                .map(server -> membershipMap.get(server.getName()))
+                        .flatMap(membership ->  influxDBRepository.writePoint(Point.measurement("gossip")
+                                .addTag("from", serverManager.getMyServer().getName())
+                                .addTag("server", membership.getServerName())
+                                .addField("heartbeat", membership.getHeartbeat())
+                                .addField("status", membership.getStatus().name())).thenReturn(membership))
+                .filter(membership -> !membership.getServerName().equals(myServerName))
+                .filter(membership -> random.nextBoolean())
+                .flatMap(membership -> gossipNetworkPort.propagateStatus(serverManager.getServerByName(membership.getServerName()), new GossipUpdateDto(myServerName, membershipMap.values().stream().toList())))
                 .filter(myMembership -> !myMembership.getStatus().isAlive())
                 .take(1)
                 .doOnNext(membership -> log.info("[Gossip] server was in a state of failure."))

@@ -1,11 +1,13 @@
 package com.zeromh.kvdb.server.merkle.application;
 
+import com.influxdb.client.write.Point;
 import com.zeromh.consistenthash.domain.model.key.HashKey;
 import com.zeromh.consistenthash.domain.model.server.HashServer;
 import com.zeromh.consistenthash.domain.service.hash.HashServicePort;
 import com.zeromh.kvdb.server.common.ServerManager;
 import com.zeromh.kvdb.server.common.domain.DataObject;
 import com.zeromh.kvdb.server.common.dto.MerkleHashDto;
+import com.zeromh.kvdb.server.common.infrastructure.monitoring.InfluxDBRepository;
 import com.zeromh.kvdb.server.config.QuorumProperty;
 import com.zeromh.kvdb.server.key.infrastructure.store.KeyStorePort;
 import com.zeromh.kvdb.server.merkle.domain.MerkleBucket;
@@ -35,6 +37,7 @@ public class MerkleService {
     private final HashServicePort hashServicePort;
     private final KeyStorePort keyStorePort;
     private final QuorumProperty quorumProperty;
+    private final InfluxDBRepository influxDBRepository;
 
     @PostConstruct
     public void init() {
@@ -59,7 +62,13 @@ public class MerkleService {
         MerkleTree merkleTree = getMerkleTreeOrCreateTree(merkleHashDto);
 
         long merkleValue = merkleTree.updateMerkleValue(merkleHashDto.getDataHash(), dataObject);
-        return Mono.empty();
+        log.info("[Merkle] Tree {} value is updated - value: {}", merkleTree.getStandardHash(), merkleValue);
+
+        return influxDBRepository.writePoint(Point.measurement("merkle")
+                .addTag("server", serverManager.getMyServer().getName())
+                .addTag("partition", String.valueOf(merkleTree.getStandardHash()))
+                .addField("value", merkleValue)
+        );
     }
 
     public Flux<String> compareMerkleAndFindDifferentNode(MerkleTree comparisonTree) {
@@ -72,13 +81,19 @@ public class MerkleService {
     }
 
     private MerkleTree getMerkleTreeOrCreateTree(MerkleHashDto merkleHashDto) {
-        if (!merkleTreeMap.containsKey(merkleHashDto.getStartNodeHash())) {
-            MerkleTree merkleTree = new MerkleTree(merkleHashDto.getStartNodeHash(), merkleHashDto.getEndNodeHash());
-            merkleTreeMap.put(merkleTree.getStandardHash(), merkleTree);
-            log.info("[Merkle] Tree is created. hash: {}", merkleTree.getStandardHash());
-        }
+//        if (!merkleTreeMap.containsKey(merkleHashDto.getStartNodeHash())) {
+//            MerkleTree merkleTree = new MerkleTree(merkleHashDto.getStartNodeHash(), merkleHashDto.getEndNodeHash());
+//            merkleTreeMap.put(merkleTree.getStandardHash(), merkleTree);
+//            log.info("[Merkle] Tree is created. hash: {}", merkleTree.getStandardHash());
+//        }
+//
+//        return merkleTreeMap.get(merkleHashDto.getStartNodeHash());
 
-        return merkleTreeMap.get(merkleHashDto.getStartNodeHash());
+        return merkleTreeMap.computeIfAbsent(merkleHashDto.getStartNodeHash(), key -> {
+            MerkleTree merkleTree = new MerkleTree(merkleHashDto.getStartNodeHash(), merkleHashDto.getEndNodeHash());
+            log.info("[Merkle] Tree is created. hash: {}", merkleTree.getStandardHash());
+            return merkleTree;
+        });
     }
 
     public Flux<String> checkTobeSameMerkle(HashServer requestServer) {
