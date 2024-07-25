@@ -67,13 +67,11 @@ public class MerkleService implements MerkleUseCase {
 
     @Override
     public MerkleTree getMerkleTreeOrCreateTree(MerkleHashDto merkleHashDto) {
-        if (!merkleTreeMap.containsKey(merkleHashDto.getStartNodeHash())) {
+        return merkleTreeMap.computeIfAbsent(merkleHashDto.getStartNodeHash(), key -> {
             MerkleTree merkleTree = new MerkleTree(merkleHashDto.getStartNodeHash(), merkleHashDto.getEndNodeHash());
-            merkleTreeMap.put(merkleTree.getStandardHash(), merkleTree);
             log.info("[Merkle] Tree is created. hash: {}", merkleTree.getStandardHash());
-        }
-
-        return merkleTreeMap.get(merkleHashDto.getStartNodeHash());
+            return merkleTree;
+        });
     }
 
     @Override
